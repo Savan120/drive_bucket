@@ -82,9 +82,12 @@ def get_console_data() -> dict[str, Any]:
 			filters={"parent": row["name"], "parenttype": ACCOUNT_DOCTYPE},
 			fields=["file_name", "folder_type", "status", "error_message", "timestamp"],
 			order_by="timestamp desc",
-			limit=5,
+			limit=6,
 		)
 		row["recent_logs"] = logs
+		row["recent_log_count"] = frappe.db.count(
+			"Backup Log", filters={"parent": row["name"], "parenttype": ACCOUNT_DOCTYPE}
+		)
 		account_docs.append(row)
 
 	return {

@@ -23,28 +23,80 @@ class DriveBucketConsole {
 		const style = document.createElement("style");
 		style.id = "drive-bucket-console-styles";
 		style.textContent = `
+			.layout-main-section:has(.drive-bucket-console),
+			.page-content:has(.drive-bucket-console),
+			.page-body:has(.drive-bucket-console) {
+				background:
+					radial-gradient(circle at 10% 10%, rgba(111, 76, 255, 0.16), transparent 24%),
+					radial-gradient(circle at 92% 14%, rgba(58, 169, 255, 0.14), transparent 22%),
+					linear-gradient(180deg, #070b16 0%, #0c1120 50%, #101624 100%) !important;
+			}
+			.page-head:has(+ .layout-main-section .drive-bucket-console) {
+				background: transparent !important;
+				border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+			}
+			.page-head .page-title .title-text,
+			.page-head .breadcrumb-container,
+			.page-head .breadcrumb-item a,
+			.page-head .breadcrumb-item span {
+				color: #eaf2ff !important;
+			}
 			.drive-bucket-console {
-				--db-shell: radial-gradient(circle at top left, #f2f4e8 0%, #eef1e6 30%, #f8f7f1 100%);
-				--db-card: rgba(255, 255, 255, 0.96);
-				--db-card-strong: #ffffff;
-				--db-border: #d6dcc7;
-				--db-border-strong: #c0caab;
-				--db-shadow: 0 20px 50px rgba(37, 51, 17, 0.08);
-				--db-text: #16200f;
-				--db-muted: #607054;
-				--db-olive: #31411f;
-				--db-moss: #718a3f;
-				--db-gold: #bf9440;
-				--db-red: #c45845;
-				--db-blue: #3a6fa8;
-				--db-surface: #f8faef;
-				--db-success-soft: #eef6e3;
-				--db-warning-soft: #fff5df;
-				--db-danger-soft: #fdebe7;
+				--db-shell: radial-gradient(circle at 12% 8%, rgba(121, 82, 255, 0.34), transparent 26%),
+					radial-gradient(circle at 88% 18%, rgba(83, 194, 255, 0.28), transparent 22%),
+					radial-gradient(circle at 74% 82%, rgba(255, 121, 85, 0.18), transparent 20%),
+					linear-gradient(145deg, #0a1023 0%, #12172b 38%, #1b1525 100%);
+				--db-card: rgba(20, 23, 38, 0.58);
+				--db-card-strong: rgba(28, 31, 48, 0.56);
+				--db-border: rgba(255, 255, 255, 0.12);
+				--db-border-strong: rgba(137, 182, 255, 0.28);
+				--db-shadow: 0 24px 54px rgba(2, 6, 23, 0.42);
+				--db-text: #eff4ff;
+				--db-muted: rgba(226, 234, 255, 0.66);
+				--db-olive: #7eb7ff;
+				--db-moss: #4f8dff;
+				--db-gold: #94c4ff;
+				--db-red: #ff8e88;
+				--db-blue: #77aaff;
+				--db-surface: rgba(255, 255, 255, 0.06);
+				--db-success-soft: rgba(105, 240, 174, 0.15);
+				--db-warning-soft: rgba(126, 183, 255, 0.16);
+				--db-danger-soft: rgba(255, 142, 136, 0.18);
 				background: var(--db-shell);
-				border-radius: 30px;
-				padding: 20px;
+				border-radius: 34px;
+				padding: 22px;
 				min-height: calc(100vh - 180px);
+				margin-top: 10px;
+				position: relative;
+				overflow: hidden;
+				border: 1px solid rgba(255, 255, 255, 0.09);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.14),
+					0 36px 70px rgba(4, 8, 19, 0.44);
+				backdrop-filter: blur(18px);
+			}
+			.drive-bucket-console::before,
+			.drive-bucket-console::after {
+				content: "";
+				position: absolute;
+				border-radius: 50%;
+				filter: blur(4px);
+				pointer-events: none;
+				opacity: 0.9;
+			}
+			.drive-bucket-console::before {
+				width: 340px;
+				height: 340px;
+				top: -110px;
+				right: -90px;
+				background: radial-gradient(circle, rgba(82, 157, 255, 0.24) 0%, rgba(82, 157, 255, 0) 70%);
+			}
+			.drive-bucket-console::after {
+				width: 300px;
+				height: 300px;
+				bottom: -120px;
+				left: -80px;
+				background: radial-gradient(circle, rgba(164, 101, 255, 0.18) 0%, rgba(164, 101, 255, 0) 72%);
 			}
 			.drive-bucket-console * { box-sizing: border-box; }
 			.db-topbar {
@@ -61,6 +113,7 @@ class DriveBucketConsole {
 				letter-spacing: -0.03em;
 				color: var(--db-text);
 				font-weight: 800;
+				text-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 			}
 			.db-topbar-copy p {
 				margin: 6px 0 0;
@@ -75,15 +128,43 @@ class DriveBucketConsole {
 			}
 			.db-hero {
 				background:
-					radial-gradient(circle at top right, rgba(221, 191, 122, 0.24), transparent 30%),
-					linear-gradient(135deg, #243116 0%, #31411f 42%, #4c642c 100%);
-				border-radius: 28px;
-				color: #fbfbf5;
+					linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
+					radial-gradient(circle at top right, rgba(160, 120, 255, 0.24), transparent 34%),
+					radial-gradient(circle at left center, rgba(74, 149, 255, 0.2), transparent 30%),
+					linear-gradient(145deg, rgba(18, 23, 40, 0.84), rgba(32, 23, 40, 0.58));
+				border-radius: 30px;
+				color: #f8fbff;
 				padding: 28px;
 				display: grid;
 				grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
 				gap: 20px;
-				box-shadow: 0 26px 54px rgba(33, 41, 21, 0.16);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.14),
+					0 20px 40px rgba(3, 8, 23, 0.26);
+				position: relative;
+				overflow: hidden;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				backdrop-filter: blur(18px);
+			}
+			.db-hero::before,
+			.db-account-card::before,
+			.db-card::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				background:
+					linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 34%),
+					radial-gradient(circle at 78% 20%, rgba(146, 117, 255, 0.14), transparent 28%);
+				pointer-events: none;
+				opacity: 1;
+				transition: none;
+				filter: none;
+			}
+			.db-hero > *,
+			.db-account-card > *,
+			.db-card > * {
+				position: relative;
+				z-index: 1;
 			}
 			.db-hero h2 {
 				margin: 0;
@@ -96,7 +177,7 @@ class DriveBucketConsole {
 			.db-hero p {
 				margin: 12px 0 0;
 				max-width: 700px;
-				color: rgba(251, 251, 245, 0.82);
+				color: rgba(241, 245, 255, 0.78);
 				font-size: 15px;
 				line-height: 1.55;
 			}
@@ -115,33 +196,38 @@ class DriveBucketConsole {
 				margin-top: 18px;
 			}
 			.db-chip {
-				background: rgba(255, 255, 255, 0.1);
-				border: 1px solid rgba(255, 255, 255, 0.16);
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+				border: 1px solid rgba(255, 255, 255, 0.14);
 				border-radius: 18px;
 				padding: 14px 16px;
-				backdrop-filter: blur(6px);
+				backdrop-filter: blur(14px);
+				min-width: 0;
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 			}
 			.db-chip-label {
 				font-size: 11px;
 				letter-spacing: 0.08em;
 				text-transform: uppercase;
-				color: rgba(247, 245, 238, 0.7);
+				color: rgba(233, 240, 255, 0.68);
 			}
 			.db-chip-value {
 				margin-top: 6px;
 				font-size: 26px;
 				font-weight: 700;
 				color: #ffffff;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
 			}
 			.db-hero-panel {
-				background: rgba(10, 16, 7, 0.16);
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
 				border: 1px solid rgba(255, 255, 255, 0.12);
 				border-radius: 24px;
 				padding: 20px;
-				backdrop-filter: blur(8px);
+				backdrop-filter: blur(16px);
 				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
+				align-items: stretch;
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
 			}
 			.db-hero-panel h3,
 			.db-section-head h3,
@@ -153,36 +239,48 @@ class DriveBucketConsole {
 			.db-hero-panel p {
 				margin: 10px 0 0;
 				font-size: 13px;
-				color: rgba(251, 251, 245, 0.8);
+				color: rgba(233, 240, 255, 0.76);
 			}
-			.db-alert {
-				border-radius: 18px;
-				padding: 14px 16px;
-				font-size: 13px;
-				line-height: 1.45;
-				border: 1px solid transparent;
+			.db-default-meta {
+				margin-top: 14px;
+				padding: 12px 14px;
+				border-radius: 16px;
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+				border: 1px solid rgba(255, 255, 255, 0.15);
+				backdrop-filter: blur(14px);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 			}
-			.db-alert.warning {
-				background: rgba(255, 245, 223, 0.16);
-				border-color: rgba(255, 245, 223, 0.24);
-				color: #fff5df;
+			.db-default-meta-label {
+				font-size: 11px;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: rgba(233, 240, 255, 0.66);
 			}
-			.db-alert.success {
-				background: rgba(238, 246, 227, 0.16);
-				border-color: rgba(238, 246, 227, 0.22);
-				color: #eef6e3;
+			.db-default-meta-value {
+				margin-top: 6px;
+				font-size: 16px;
+				font-weight: 700;
+				line-height: 1.35;
+				color: #ffffff;
+				word-break: break-word;
 			}
 			.db-shell-grid {
-				grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.95fr);
+				grid-template-columns: 1fr;
 				margin-top: 20px;
 			}
 			.db-card {
 				background: var(--db-card);
 				border: 1px solid var(--db-border);
-				border-radius: 26px;
+				border-radius: 28px;
 				padding: 20px;
 				box-shadow: var(--db-shadow);
 				color: var(--db-text);
+				position: relative;
+				overflow: hidden;
+				backdrop-filter: blur(18px);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.12),
+					0 22px 44px rgba(4, 8, 19, 0.28);
 			}
 			.db-section-head {
 				display: flex;
@@ -197,36 +295,33 @@ class DriveBucketConsole {
 				font-size: 12px;
 				color: var(--db-muted);
 			}
+			.db-section-head h3 {
+				color: var(--db-text);
+			}
 			.db-account-grid {
 				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 			}
+			.db-account-grid.is-collapsed .db-account-card:nth-child(n+6) {
+				display: none;
+			}
 			.db-account-card {
-				border: 1px solid var(--db-border);
-				border-radius: 22px;
-				background: var(--db-card-strong);
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				border-radius: 24px;
+				background: linear-gradient(180deg, rgba(38, 41, 59, 0.5), rgba(23, 26, 40, 0.42));
 				padding: 16px;
 				display: flex;
 				flex-direction: column;
 				gap: 14px;
 				position: relative;
 				overflow: hidden;
+				backdrop-filter: blur(16px);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 			}
 			.db-account-card.is-default {
-				border-color: rgba(191, 148, 64, 0.72);
-				box-shadow: inset 0 0 0 1px rgba(191, 148, 64, 0.22);
-			}
-			.db-account-card.is-default::after {
-				content: "Default Fallback";
-				position: absolute;
-				top: 14px;
-				right: -38px;
-				background: #31411f;
-				color: #fff;
-				font-size: 10px;
-				font-weight: 700;
-				padding: 6px 38px;
-				transform: rotate(36deg);
-				letter-spacing: 0.08em;
+				border-color: rgba(131, 180, 255, 0.3);
+				box-shadow:
+					inset 0 0 0 1px rgba(131, 180, 255, 0.12),
+					0 0 0 1px rgba(255, 255, 255, 0.04);
 			}
 			.db-account-row,
 			.db-account-meta,
@@ -236,6 +331,10 @@ class DriveBucketConsole {
 				justify-content: space-between;
 				gap: 12px;
 			}
+			.db-account-row,
+			.db-account-meta {
+				flex-wrap: wrap;
+			}
 			.db-pill {
 				display: inline-flex;
 				align-items: center;
@@ -244,22 +343,40 @@ class DriveBucketConsole {
 				font-size: 11px;
 				font-weight: 700;
 			}
-			.db-pill.green { background: #e8f4e2; color: #476523; }
-			.db-pill.red { background: #fde8e4; color: #a63f30; }
-			.db-pill.gold { background: #fff3dc; color: #9b6a14; }
-			.db-pill.blue { background: #eaf3ff; color: #356ea9; }
-			.db-pill.slate { background: #f1f4ea; color: #5f6c52; }
+			.db-pill.green { background: rgba(112, 234, 170, 0.16); color: #b4ffd2; }
+			.db-pill.red { background: rgba(255, 142, 136, 0.16); color: #ffc2be; }
+			.db-pill.gold { background: rgba(123, 170, 255, 0.16); color: #cfe2ff; }
+			.db-pill.blue { background: rgba(255, 255, 255, 0.08); color: #9cc6ff; }
+			.db-pill.slate { background: rgba(255, 255, 255, 0.08); color: #dde8ff; }
+			.db-pill.default-flag {
+				background: linear-gradient(180deg, rgba(104, 161, 255, 0.78), rgba(42, 103, 210, 0.84));
+				color: #ffffff;
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.18),
+					0 10px 24px rgba(26, 115, 232, 0.18);
+			}
+			.db-account-title-wrap {
+				min-width: 0;
+				flex: 1 1 220px;
+			}
+			.db-card-title {
+				overflow-wrap: anywhere;
+				line-height: 1.2;
+				color: var(--db-text);
+			}
 			.db-meter {
 				height: 10px;
-				background: #edf1e4;
+				background: rgba(255, 255, 255, 0.08);
 				border-radius: 999px;
 				overflow: hidden;
+				box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.24);
 			}
 			.db-meter > span {
 				display: block;
 				height: 100%;
 				border-radius: inherit;
-				background: linear-gradient(90deg, #5d6f35 0%, #c49a45 100%);
+				background: linear-gradient(90deg, #6db4ff 0%, #5a76ff 54%, #8f71ff 100%);
+				box-shadow: 0 0 16px rgba(104, 161, 255, 0.3);
 			}
 			.db-action-row {
 				display: flex;
@@ -267,29 +384,46 @@ class DriveBucketConsole {
 				gap: 10px;
 			}
 			.db-btn {
-				border: 0;
-				border-radius: 14px;
-				padding: 10px 14px;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				border-radius: 16px;
+				padding: 10px 16px;
 				font-weight: 700;
 				font-size: 12px;
 				cursor: pointer;
-				transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+				transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+				backdrop-filter: blur(14px);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 			}
-			.db-btn:hover { transform: translateY(-1px); }
-			.db-btn.primary { background: #27321a; color: #f7f5ee; }
-			.db-btn.secondary { background: #edf1e4; color: #33411d; }
-			.db-btn.ghost { background: transparent; border: 1px solid var(--db-border); color: var(--db-text); }
+			.db-btn:hover {
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.16),
+					0 12px 24px rgba(5, 10, 24, 0.24);
+			}
+			.db-btn.primary {
+				background: linear-gradient(180deg, rgba(103, 168, 255, 0.88), rgba(50, 111, 222, 0.9));
+				color: #ffffff;
+			}
+			.db-btn.secondary {
+				background: rgba(255, 255, 255, 0.1);
+				color: #eff4ff;
+			}
+			.db-btn.ghost {
+				background: rgba(255, 255, 255, 0.04);
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				color: var(--db-text);
+			}
 			.db-btn.wide { width: 100%; justify-content: center; }
 			.db-policy-list {
 				margin-top: 14px;
 			}
 			.db-policy {
 				border-radius: 18px;
-				background: #f7f8f2;
-				border: 1px solid var(--db-border);
+				background: rgba(255, 255, 255, 0.06);
+				border: 1px solid rgba(255, 255, 255, 0.1);
 				padding: 14px;
 				font-size: 13px;
 				color: var(--db-muted);
+				backdrop-filter: blur(12px);
 			}
 			.db-log-list,
 			.db-import-list {
@@ -300,100 +434,200 @@ class DriveBucketConsole {
 			.db-log-item,
 			.db-import-item {
 				border-radius: 16px;
-				border: 1px solid var(--db-border);
-				background: #fbfbf8;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				background: rgba(255, 255, 255, 0.05);
 				padding: 12px 14px;
+				backdrop-filter: blur(14px);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 			}
 			.db-log-item strong,
 			.db-import-item strong {
 				display: block;
 				color: var(--db-text);
 			}
+			.db-log-row span,
+			.db-import-item span {
+				color: var(--db-muted);
+			}
 			.db-empty {
-				border: 1px dashed var(--db-border);
-				background: rgba(255, 255, 255, 0.58);
+				border: 1px dashed rgba(255, 255, 255, 0.16);
+				background: rgba(255, 255, 255, 0.05);
 				border-radius: 18px;
 				padding: 24px;
 				text-align: center;
 				color: var(--db-muted);
+				backdrop-filter: blur(12px);
 			}
 			.db-search-row {
 				display: grid;
-				grid-template-columns: minmax(180px, 220px) 1fr auto;
+				grid-template-columns: minmax(180px, 220px) 1fr;
 				gap: 10px;
 				margin-top: 14px;
 			}
 			.db-search-row input,
 			.db-search-row select {
-				border: 1px solid var(--db-border);
-				background: #fff;
-				border-radius: 14px;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				background: rgba(255, 255, 255, 0.07);
+				color: var(--db-text);
+				border-radius: 16px;
 				padding: 10px 12px;
 				font-size: 13px;
+				backdrop-filter: blur(14px);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+			}
+			.db-search-row input::placeholder {
+				color: rgba(223, 232, 255, 0.48);
+			}
+			.db-search-row select option {
+				background: #111827;
+				color: #eff4ff;
 			}
 			.db-side-stack {
 				display: flex;
 				flex-direction: column;
 				gap: 14px;
 			}
-			.db-insight-grid {
-				grid-template-columns: repeat(2, minmax(0, 1fr));
-			}
-			.db-insight {
-				background: var(--db-surface);
-				border: 1px solid var(--db-border);
-				border-radius: 18px;
-				padding: 14px;
-			}
-			.db-insight strong {
-				display: block;
-				font-size: 22px;
-				line-height: 1;
-				color: var(--db-text);
-				margin-bottom: 6px;
-			}
-			.db-insight span {
-				font-size: 12px;
-				color: var(--db-muted);
-			}
-			.db-step-list {
-				display: flex;
-				flex-direction: column;
-				gap: 10px;
-			}
-			.db-step {
-				display: grid;
-				grid-template-columns: 34px 1fr;
-				gap: 12px;
-				align-items: start;
-				padding: 12px 14px;
-				border-radius: 18px;
-				border: 1px solid var(--db-border);
-				background: #fbfbf7;
-			}
-			.db-step-no {
-				width: 34px;
-				height: 34px;
-				border-radius: 50%;
-				background: #31411f;
-				color: #fff;
-				display: flex;
-				align-items: center;
-				justify-content: center;
+			.db-collapse-toggle {
 				font-size: 12px;
 				font-weight: 700;
+				color: #cfe2ff;
+				cursor: pointer;
+				background: rgba(255, 255, 255, 0.08);
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				padding: 8px 12px;
+				border-radius: 999px;
+				backdrop-filter: blur(12px);
 			}
-			.db-step strong {
-				display: block;
-				color: var(--db-text);
-				font-size: 13px;
-				margin-bottom: 2px;
+			.db-collapse-toggle:hover {
+				background: rgba(255, 255, 255, 0.12);
 			}
-			.db-step p {
-				margin: 0;
-				font-size: 12px;
-				color: var(--db-muted);
-				line-height: 1.45;
+			:root:not([data-theme="dark"]) .layout-main-section:has(.drive-bucket-console),
+			:root:not([data-theme="dark"]) .page-content:has(.drive-bucket-console),
+			:root:not([data-theme="dark"]) .page-body:has(.drive-bucket-console) {
+				background:
+					radial-gradient(circle at 8% 12%, rgba(132, 173, 255, 0.16), transparent 26%),
+					radial-gradient(circle at 92% 16%, rgba(188, 159, 255, 0.18), transparent 22%),
+					linear-gradient(180deg, #f7faff 0%, #eef4ff 52%, #f8fbff 100%) !important;
+			}
+			:root:not([data-theme="dark"]) .page-head:has(+ .layout-main-section .drive-bucket-console) {
+				background: transparent !important;
+				border-bottom-color: rgba(21, 51, 92, 0.08) !important;
+			}
+			:root:not([data-theme="dark"]) .page-head .page-title .title-text,
+			:root:not([data-theme="dark"]) .page-head .breadcrumb-container,
+			:root:not([data-theme="dark"]) .page-head .breadcrumb-item a,
+			:root:not([data-theme="dark"]) .page-head .breadcrumb-item span {
+				color: #1c2d4a !important;
+			}
+			:root:not([data-theme="dark"]) .drive-bucket-console {
+				--db-shell: radial-gradient(circle at 12% 8%, rgba(114, 163, 255, 0.24), transparent 26%),
+					radial-gradient(circle at 88% 18%, rgba(152, 200, 255, 0.28), transparent 24%),
+					radial-gradient(circle at 74% 82%, rgba(196, 176, 255, 0.2), transparent 20%),
+					linear-gradient(145deg, #f8fbff 0%, #edf4ff 40%, #f7f5ff 100%);
+				--db-card: rgba(255, 255, 255, 0.72);
+				--db-card-strong: rgba(255, 255, 255, 0.78);
+				--db-border: rgba(108, 140, 189, 0.18);
+				--db-border-strong: rgba(83, 129, 201, 0.24);
+				--db-shadow: 0 24px 54px rgba(56, 88, 136, 0.12);
+				--db-text: #1b2a44;
+				--db-muted: rgba(71, 95, 135, 0.8);
+				--db-olive: #2a66d9;
+				--db-moss: #3b82f6;
+				--db-gold: #5f96ff;
+				--db-red: #d95f5f;
+				--db-blue: #2c6ff0;
+				--db-surface: rgba(255, 255, 255, 0.62);
+				--db-success-soft: rgba(40, 167, 69, 0.12);
+				--db-warning-soft: rgba(44, 111, 240, 0.12);
+				--db-danger-soft: rgba(217, 95, 95, 0.12);
+				border: 1px solid rgba(132, 166, 214, 0.16);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.8),
+					0 30px 60px rgba(74, 104, 150, 0.14);
+				backdrop-filter: blur(18px);
+			}
+			:root:not([data-theme="dark"]) .drive-bucket-console::before {
+				background: radial-gradient(circle, rgba(99, 163, 255, 0.18) 0%, rgba(82, 157, 255, 0) 70%);
+			}
+			:root:not([data-theme="dark"]) .drive-bucket-console::after {
+				background: radial-gradient(circle, rgba(176, 124, 255, 0.12) 0%, rgba(164, 101, 255, 0) 72%);
+			}
+			:root:not([data-theme="dark"]) .db-topbar-copy h1,
+			:root:not([data-theme="dark"]) .db-section-head h3,
+			:root:not([data-theme="dark"]) .db-card-title {
+				color: #1b2a44;
+				text-shadow: none;
+			}
+			:root:not([data-theme="dark"]) .db-topbar-copy p,
+			:root:not([data-theme="dark"]) .db-section-head p,
+			:root:not([data-theme="dark"]) .db-card-subtitle,
+			:root:not([data-theme="dark"]) .db-log-row span,
+			:root:not([data-theme="dark"]) .db-import-item span {
+				color: rgba(71, 95, 135, 0.8);
+			}
+			:root:not([data-theme="dark"]) .db-hero {
+				background:
+					linear-gradient(135deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.28)),
+					radial-gradient(circle at top right, rgba(164, 145, 255, 0.24), transparent 34%),
+					radial-gradient(circle at left center, rgba(116, 178, 255, 0.24), transparent 30%),
+					linear-gradient(145deg, rgba(235, 242, 255, 0.92), rgba(228, 235, 248, 0.84));
+				color: #1b2a44;
+				border: 1px solid rgba(114, 151, 211, 0.18);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.7),
+					0 20px 40px rgba(82, 114, 162, 0.12);
+			}
+			:root:not([data-theme="dark"]) .db-hero h2,
+			:root:not([data-theme="dark"]) .db-chip-value,
+			:root:not([data-theme="dark"]) .db-default-meta-value {
+				color: #1b2a44;
+			}
+			:root:not([data-theme="dark"]) .db-hero p,
+			:root:not([data-theme="dark"]) .db-hero-panel p,
+			:root:not([data-theme="dark"]) .db-chip-label,
+			:root:not([data-theme="dark"]) .db-default-meta-label {
+				color: rgba(71, 95, 135, 0.78);
+			}
+			:root:not([data-theme="dark"]) .db-chip,
+			:root:not([data-theme="dark"]) .db-hero-panel,
+			:root:not([data-theme="dark"]) .db-default-meta,
+			:root:not([data-theme="dark"]) .db-card,
+			:root:not([data-theme="dark"]) .db-account-card,
+			:root:not([data-theme="dark"]) .db-log-item,
+			:root:not([data-theme="dark"]) .db-import-item,
+			:root:not([data-theme="dark"]) .db-empty,
+			:root:not([data-theme="dark"]) .db-policy {
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(245, 249, 255, 0.68));
+				border-color: rgba(108, 140, 189, 0.18);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+			}
+			:root:not([data-theme="dark"]) .db-card::before,
+			:root:not([data-theme="dark"]) .db-account-card::before,
+			:root:not([data-theme="dark"]) .db-hero::before {
+				background:
+					linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent 36%),
+					radial-gradient(circle at 78% 20%, rgba(146, 117, 255, 0.08), transparent 28%);
+			}
+			:root:not([data-theme="dark"]) .db-pill.green { background: rgba(57, 191, 120, 0.12); color: #137a4b; }
+			:root:not([data-theme="dark"]) .db-pill.red { background: rgba(217, 95, 95, 0.12); color: #a03f3f; }
+			:root:not([data-theme="dark"]) .db-pill.gold { background: rgba(62, 120, 245, 0.12); color: #2d63d7; }
+			:root:not([data-theme="dark"]) .db-pill.blue { background: rgba(62, 120, 245, 0.08); color: #356bdc; }
+			:root:not([data-theme="dark"]) .db-pill.slate { background: rgba(114, 137, 173, 0.12); color: #5b6f95; }
+			:root:not([data-theme="dark"]) .db-search-row input,
+			:root:not([data-theme="dark"]) .db-search-row select,
+			:root:not([data-theme="dark"]) .db-btn.secondary,
+			:root:not([data-theme="dark"]) .db-btn.ghost,
+			:root:not([data-theme="dark"]) .db-collapse-toggle {
+				background: rgba(255, 255, 255, 0.78);
+				color: #1b2a44;
+				border-color: rgba(108, 140, 189, 0.18);
+			}
+			:root:not([data-theme="dark"]) .db-search-row input::placeholder {
+				color: rgba(93, 113, 145, 0.68);
+			}
+			:root:not([data-theme="dark"]) .db-search-row select option {
+				background: #ffffff;
+				color: #1b2a44;
 			}
 			@media (max-width: 1100px) {
 				.db-hero,
@@ -401,8 +635,7 @@ class DriveBucketConsole {
 			}
 			@media (max-width: 760px) {
 				.db-chip-row,
-				.db-account-grid,
-				.db-insight-grid { grid-template-columns: 1fr; }
+				.db-account-grid { grid-template-columns: 1fr; }
 				.drive-bucket-console { padding: 12px; }
 				.db-hero { padding: 18px; }
 				.db-topbar { flex-direction: column; align-items: flex-start; }
@@ -428,16 +661,18 @@ class DriveBucketConsole {
 				</div>
 				<section class="db-hero">
 					<div>
-						<h2>Make upload routing obvious, safe, and client-ready.</h2>
-						<p>Choose a default fallback drive, see which accounts are close to full, and give your team a clean path for both automatic uploads and direct Drive attachments.</p>
+						<h2>Smart Google Drive control.</h2>
+						<p>Connect drives, control fallback, and manage uploads from one clean screen.</p>
 						<div class="db-chip-row js-summary"></div>
 					</div>
 					<div class="db-hero-panel">
 						<div>
-							<h3>Routing Intelligence</h3>
-							<p class="js-routing-copy">Loading current drive routing policy...</p>
+							<p class="js-routing-copy">Manage connected accounts and file imports from one place.</p>
+							<div class="db-default-meta">
+								<div class="db-default-meta-label">Default fallback drive</div>
+								<div class="db-default-meta-value js-default-meta">Not configured</div>
+							</div>
 						</div>
-						<div class="db-alert warning js-setup-alert">Checking setup quality...</div>
 					</div>
 				</section>
 				<div class="db-shell-grid">
@@ -445,46 +680,25 @@ class DriveBucketConsole {
 						<div class="db-section-head">
 							<div>
 								<h3>Managed Drives</h3>
-								<p>Each card shows who owns the drive, whether it can be used as fallback, and the latest upload activity.</p>
+								<p>Ownership, quota, fallback, and recent uploads.</p>
 							</div>
+							<button class="db-collapse-toggle js-collapse-toggle" style="display:none;">${__("Show More")}</button>
 						</div>
 						<div class="db-account-grid js-account-grid"></div>
 					</section>
-					<div class="db-side-stack">
-						<section class="db-card">
-							<div class="db-section-head">
-								<div>
-									<h3>Next Best Setup</h3>
-									<p>Simple guidance for admins so the module is easy to explain to clients.</p>
-								</div>
+					<section class="db-card">
+						<div class="db-section-head">
+							<div>
+								<h3>Import From Google Drive</h3>
+								<p>Search a connected drive and attach the file into ERPNext.</p>
 							</div>
-							<div class="db-step-list js-step-list"></div>
-						</section>
-						<section class="db-card">
-							<div class="db-section-head">
-								<div>
-									<h3>Import From Google Drive</h3>
-									<p>Search one connected drive and attach the selected file directly into ERPNext.</p>
-								</div>
-							</div>
-							<div class="db-search-row">
-								<select class="js-account-selector"></select>
-								<input type="text" class="js-search-query" placeholder="Search Google Drive files by name" />
-								<button class="db-btn primary js-search-drive">${__("Search")}</button>
-							</div>
-							<div class="db-import-list js-import-list" style="margin-top:14px;"></div>
-						</section>
-						<section class="db-card">
-							<div class="db-section-head">
-								<div>
-									<h3>Routing Snapshot</h3>
-									<p>A quick client-facing explanation of how your upload policy behaves.</p>
-								</div>
-							</div>
-							<div class="db-insight-grid js-insight-grid"></div>
-							<div class="db-policy-list js-policy-list"></div>
-						</section>
-					</div>
+						</div>
+						<div class="db-search-row">
+							<select class="js-account-selector"></select>
+							<input type="text" class="js-search-query" placeholder="Search Google Drive files by name" />
+						</div>
+						<div class="db-import-list js-import-list" style="margin-top:14px;"></div>
+					</section>
 				</div>
 			</div>
 		`);
@@ -499,6 +713,13 @@ class DriveBucketConsole {
 		this.$root.on("click", ".js-sync-account", (event) => this.syncAccount($(event.currentTarget).data("account")));
 		this.$root.on("click", ".js-search-drive", () => this.searchDriveFiles());
 		this.$root.on("click", ".js-import-drive-file", (event) => this.promptImport($(event.currentTarget).data("account"), $(event.currentTarget).data("file-id")));
+		this.$root.on("click", ".js-collapse-toggle", () => this.toggleManagedDrives());
+		this.$root.on("keydown", ".js-search-query", (event) => {
+			if (event.key === "Enter") {
+				event.preventDefault();
+				this.searchDriveFiles();
+			}
+		});
 	}
 
 	async load() {
@@ -512,11 +733,7 @@ class DriveBucketConsole {
 
 	render() {
 		this.renderSummary();
-		this.renderSetupAlert();
 		this.renderAccounts();
-		this.renderPolicies();
-		this.renderSteps();
-		this.renderInsights();
 		this.renderAccountSelector();
 	}
 
@@ -525,7 +742,7 @@ class DriveBucketConsole {
 		const chips = [
 			{ label: "Connected Drives", value: summary.connected_accounts || 0 },
 			{ label: "Used / Quota", value: `${summary.total_used_space_gb || 0} / ${summary.total_quota_gb || 0} GB` },
-			{ label: "Fallback Default", value: summary.default_account || "Not set" },
+			{ label: "Fallback Default", value: summary.default_account ? "Configured" : "Not set" },
 		];
 		this.$root.find(".js-summary").html(chips.map((chip) => `
 			<div class="db-chip">
@@ -535,37 +752,26 @@ class DriveBucketConsole {
 		`).join(""));
 
 		const routingText = summary.default_account
-			? `User-linked drives are preferred first. If a user's drive is full or unavailable, uploads fall back to ${summary.default_account}.`
-			: "No system-wide default drive is set yet. User-linked drives will be used when available.";
+			? "Default fallback routing is active and ready for uploads."
+			: "Choose a default fallback drive from Managed Drives.";
 		this.$root.find(".js-routing-copy").text(routingText);
-	}
-
-	renderSetupAlert() {
-		const summary = this.state.summary || {};
-		const guestAccounts = (this.state.accounts || []).filter((account) => account.linked_user === "Guest");
-		let cssClass = "warning";
-		let message = "Pick one default fallback drive so uploads still succeed when a user's drive is missing or full.";
-
-		if (summary.default_account) {
-			cssClass = "success";
-			message = `Default fallback drive is set to ${summary.default_account}. New uploads will still prefer each user's linked drive first.`;
-		}
-
-		if (guestAccounts.length) {
-			cssClass = "warning";
-			message = `${message} Also review ${guestAccounts.length} drive account(s) linked to Guest and assign them to a real ERPNext user if they are not shared fallback drives.`;
-		}
-
-		const $alert = this.$root.find(".js-setup-alert");
-		$alert.removeClass("warning success").addClass(cssClass).text(message);
+		this.$root.find(".js-default-meta").text(summary.default_account || "Not configured");
 	}
 
 	renderAccounts() {
 		const $grid = this.$root.find(".js-account-grid");
+		const $toggle = this.$root.find(".js-collapse-toggle");
 		if (!this.state.accounts.length) {
 			$grid.html(`<div class="db-empty">No Google Drive accounts are connected yet.</div>`);
+			$toggle.hide();
 			return;
 		}
+
+		const shouldCollapse = this.state.accounts.length > 5 && !this.state.showAllAccounts;
+		$grid.toggleClass("is-collapsed", shouldCollapse);
+		$toggle
+			.toggle(this.state.accounts.length > 5)
+			.text(this.state.showAllAccounts ? __("Show Less") : __("Show More"));
 
 		$grid.html(this.state.accounts.map((account) => {
 			const percent = Math.min(account.usage_percent || 0, 100);
@@ -574,16 +780,18 @@ class DriveBucketConsole {
 			const ownerBadge = account.linked_user === "Guest"
 				? `<span class="db-pill red">Shared / Guest</span>`
 				: `<span class="db-pill slate">${frappe.utils.escape_html(account.linked_user || "No user selected")}</span>`;
+			const defaultBadge = account.is_default_upload ? `<span class="db-pill default-flag">Default Fallback</span>` : "";
 			return `
 				<article class="db-account-card ${account.is_default_upload ? "is-default" : ""}">
 					<div class="db-account-row">
-						<div>
+						<div class="db-account-title-wrap">
 							<div class="db-card-title">${frappe.utils.escape_html(account.account_email)}</div>
 							<div class="db-card-subtitle">Reserve ${account.reserve_space_gb} GB before fallback triggers</div>
 						</div>
 						<span class="db-pill ${statusClass}">${frappe.utils.escape_html(account.connection_status || "Unknown")}</span>
 					</div>
 					<div class="db-account-meta">
+						${defaultBadge}
 						<span class="db-pill gold">${account.is_default_upload ? "Default Fallback Drive" : "Primary User Drive"}</span>
 						${ownerBadge}
 						${fullBadge}
@@ -595,9 +803,7 @@ class DriveBucketConsole {
 						</div>
 						<div class="db-meter" style="margin-top:8px;"><span style="width:${percent}%;"></span></div>
 					</div>
-					<div class="db-card-subtitle">
-						Fallback: ${account.allow_fallback ? "Allowed" : "Blocked"} | Auto Sync: ${account.auto_sync_uploads ? "On" : "Off"} | Priority: ${account.fallback_priority}
-					</div>
+					<div class="db-card-subtitle">Fallback: ${account.allow_fallback ? "Allowed" : "Blocked"} | Auto Sync: ${account.auto_sync_uploads ? "On" : "Off"} | Priority: ${account.fallback_priority}</div>
 					${account.status_note ? `<div class="db-card-subtitle">${frappe.utils.escape_html(account.status_note)}</div>` : ""}
 					<div class="db-action-row">
 						<button class="db-btn secondary js-open-account" data-account="${frappe.utils.escape_html(account.name)}">${__("Open Account")}</button>
@@ -615,69 +821,11 @@ class DriveBucketConsole {
 								${log.error_message ? `<div class="db-card-subtitle">${frappe.utils.escape_html(log.error_message)}</div>` : ""}
 							</div>
 						`).join("") : `<div class="db-empty">No uploads logged for this drive yet.</div>`}
+						${account.recent_log_count > 6 ? `<div class="db-card-subtitle">Showing latest 6 uploads. Open Account to review full history.</div>` : ""}
 					</div>
 				</article>
 			`;
 		}).join(""));
-	}
-
-	renderPolicies() {
-		this.$root.find(".js-policy-list").html((this.state.policies || []).map((policy) => `
-			<div class="db-policy">${frappe.utils.escape_html(policy)}</div>
-		`).join(""));
-	}
-
-	renderSteps() {
-		const hasDefault = Boolean(this.state.summary?.default_account);
-		const guestAccounts = (this.state.accounts || []).filter((account) => account.linked_user === "Guest").length;
-		const steps = [
-			{
-				title: hasDefault ? "Default fallback drive is already configured" : "Choose one default fallback drive",
-				copy: hasDefault
-					? `Current fallback drive: ${this.state.summary.default_account}.`
-					: "Select one managed drive as the system fallback so uploads never fail when a user has no eligible drive.",
-			},
-			{
-				title: "Give each active user a primary drive",
-				copy: "Each ERPNext user who uploads files should have one linked Google account so the first routing choice is always obvious.",
-			},
-			{
-				title: guestAccounts ? "Review shared Guest-linked drives" : "Shared drives look healthy",
-				copy: guestAccounts
-					? `${guestAccounts} connected drive(s) are linked to Guest. Keep them only if they are truly shared fallback drives.`
-					: "No Guest-linked drive needs immediate cleanup.",
-			},
-		];
-
-		this.$root.find(".js-step-list").html(steps.map((step, index) => `
-			<div class="db-step">
-				<div class="db-step-no">${index + 1}</div>
-				<div>
-					<strong>${frappe.utils.escape_html(step.title)}</strong>
-					<p>${frappe.utils.escape_html(step.copy)}</p>
-				</div>
-			</div>
-		`).join(""));
-	}
-
-	renderInsights() {
-		const accounts = this.state.accounts || [];
-		const fullCount = accounts.filter((account) => account.is_full).length;
-		const guestCount = accounts.filter((account) => account.linked_user === "Guest").length;
-		const defaultAccount = this.state.summary?.default_account || "Not set";
-		const insights = [
-			{ value: defaultAccount, label: "Active fallback target" },
-			{ value: fullCount, label: "Drives currently at fallback threshold" },
-			{ value: guestCount, label: "Shared or Guest-linked drives to review" },
-			{ value: accounts.filter((account) => account.auto_sync_uploads).length, label: "Drives accepting auto uploads" },
-		];
-
-		this.$root.find(".js-insight-grid").html(insights.map((insight) => `
-			<div class="db-insight">
-				<strong>${frappe.utils.escape_html(String(insight.value))}</strong>
-				<span>${frappe.utils.escape_html(insight.label)}</span>
-			</div>
-		`).join(""));
 	}
 
 	renderAccountSelector() {
@@ -781,5 +929,10 @@ class DriveBucketConsole {
 			__("Attach Google Drive File"),
 			__("Attach")
 		);
+	}
+
+	toggleManagedDrives() {
+		this.state.showAllAccounts = !this.state.showAllAccounts;
+		this.renderAccounts();
 	}
 }
