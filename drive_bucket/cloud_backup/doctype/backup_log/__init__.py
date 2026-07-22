@@ -1,0 +1,1 @@
+"""Backup Log child DocType."""

@@ -1,0 +1,153 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:account_email",
+ "creation": "2026-07-22 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "account_email",
+  "linked_user",
+  "connection_status",
+  "last_synced",
+  "section_break_tokens",
+  "refresh_token",
+  "access_token",
+  "token_expiry",
+  "section_break_folders",
+  "private_folder_id",
+  "public_folder_id",
+  "section_break_quota",
+  "total_quota",
+  "used_space",
+  "backup_logs"
+ ],
+ "fields": [
+  {
+   "fieldname": "account_email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Email",
+   "read_only": 1,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "linked_user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Linked User",
+   "options": "User"
+  },
+  {
+   "default": "Failed",
+   "fieldname": "connection_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Connection Status",
+   "options": "Connected\nExpired\nRevoked\nFailed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_synced",
+   "fieldtype": "Datetime",
+   "label": "Last Synced",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_tokens",
+   "fieldtype": "Section Break",
+   "label": "OAuth Tokens"
+  },
+  {
+   "fieldname": "refresh_token",
+   "fieldtype": "Password",
+   "label": "Refresh Token",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Password",
+   "label": "Access Token",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "token_expiry",
+   "fieldtype": "Datetime",
+   "label": "Token Expiry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_folders",
+   "fieldtype": "Section Break",
+   "label": "Drive Folders"
+  },
+  {
+   "fieldname": "private_folder_id",
+   "fieldtype": "Data",
+   "label": "Private Folder ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "public_folder_id",
+   "fieldtype": "Data",
+   "label": "Public Folder ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_quota",
+   "fieldtype": "Section Break",
+   "label": "Quota"
+  },
+  {
+   "fieldname": "total_quota",
+   "fieldtype": "Float",
+   "label": "Total Quota",
+   "read_only": 1
+  },
+  {
+   "fieldname": "used_space",
+   "fieldtype": "Float",
+   "label": "Used Space",
+   "read_only": 1
+  },
+  {
+   "fieldname": "backup_logs",
+   "fieldtype": "Table",
+   "label": "Backup Logs",
+   "options": "Backup Log",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "module": "Drive Bucket",
+ "name": "Cloud Storage Account",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Storage Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "Storage Admin"
+  }
+ ],
+ "quick_entry": 0,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -4,6 +4,8 @@ app_publisher = "Savan Patel"
 app_description = "Unified storage orchestration app for managing bucket-backed file workflows across Drive and object storage providers."
 app_email = "savan.p.solufy@gmail.com"
 app_license = "mit"
+after_install = "drive_bucket.install.after_install"
+after_migrate = "drive_bucket.install.after_migrate"
 
 # Apps
 # ------------------
@@ -43,7 +45,7 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {"File": "public/js/file.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -86,7 +88,7 @@ app_license = "mit"
 # ------------
 
 # before_install = "drive_bucket.install.before_install"
-# after_install = "drive_bucket.install.after_install"
+required_apps = ["frappe"]
 
 # Uninstallation
 # ------------
@@ -126,46 +128,35 @@ app_license = "mit"
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
+permission_query_conditions = {
+	"Cloud Storage Account": "drive_bucket.permissions.get_cloud_storage_account_permission_query",
+}
+
+has_permission = {
+	"Cloud Storage Account": "drive_bucket.permissions.has_cloud_storage_account_permission",
+}
 
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"File": {
+		"after_insert": "drive_bucket.cloud_backup.tasks.enqueue_file_upload",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"drive_bucket.tasks.all"
-# 	],
-# 	"daily": [
-# 		"drive_bucket.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"drive_bucket.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"drive_bucket.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"drive_bucket.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"daily": [
+		"drive_bucket.cloud_backup.tasks.run_daily_backup",
+	],
+	"hourly": [
+		"drive_bucket.cloud_backup.tasks.refresh_expiring_tokens",
+	],
+}
 
 # Testing
 # -------
@@ -255,4 +246,3 @@ app_license = "mit"
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-

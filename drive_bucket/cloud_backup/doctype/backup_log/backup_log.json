@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "creation": "2026-07-22 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "file_name",
+  "folder_type",
+  "size",
+  "status",
+  "error_message",
+  "timestamp"
+ ],
+ "fields": [
+  {
+   "fieldname": "file_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "File Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "folder_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Folder Type",
+   "options": "Private\nPublic",
+   "reqd": 1
+  },
+  {
+   "fieldname": "size",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Size"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Success\nFailed",
+   "reqd": 1
+  },
+  {
+   "fieldname": "error_message",
+   "fieldtype": "Small Text",
+   "label": "Error Message"
+  },
+  {
+   "default": "Now",
+   "fieldname": "timestamp",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Timestamp"
+  }
+ ],
+ "istable": 1,
+ "module": "Drive Bucket",
+ "name": "Backup Log",
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}
