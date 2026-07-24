@@ -1,30 +1,37 @@
 # Drive Bucket
 
-Drive Bucket is a Frappe / ERPNext app for routing ERPNext attachments to Google Drive with user-based ownership, fallback drive logic, quota awareness, and admin-managed sharing.
+Drive Bucket is a Frappe / ERPNext app for routing ERPNext attachments to Google Drive with multi-account storage, fallback drive logic, module-wise routing, direct Drive import, and database backup support.
 
 It is designed for teams that want to:
 
 - connect multiple Google Drive accounts
-- route uploads to the correct user's drive
-- fall back to a default drive when a user drive is unavailable or full
-- import files from Google Drive into ERPNext attachments
-- manage Google Drive access from inside ERPNext
+- send uploads directly to Google Drive instead of depending only on local file storage
+- organize uploads by module and privacy type
+- fall back to another drive when a primary drive is unavailable or near full
+- import existing Google Drive files into ERPNext attachments
+- manage backups, quota, and account actions from one control center
 
 ## Features
 
 - Google OAuth2 connection flow using ERPNext `Google Settings`
 - one `Cloud Storage Account` record per connected Google account
-- automatic folder management:
-  - `erpnext_backup_private`
-  - `erpnext_backup_public`
-- automatic file upload on new ERPNext `File` save
-- drive routing rules:
-  - linked user's drive first
-  - default fallback drive if user drive is unavailable or quota-limited
-- Google Drive quota sync
-- custom Drive Bucket control center page at `/app/cloud-backup`
+- direct upload metadata stored on ERPNext `File`
+- module-wise routing through `Module Routes`
+- fallback drive selection based on availability, reserve space, and priority
+- public / private Drive folder separation
+- database backup upload to Google Drive
 - direct Google Drive import into ERPNext attachments
-- Google Drive permission management from the ERPNext `File` form
+- Drive Bucket control center page with tabs for:
+  - `Drives`
+  - `Overview`
+  - `Backups`
+  - `Import From Google Drive`
+- account-level actions like:
+  - connect
+  - sync quota
+  - ensure folders
+  - run backup
+  - download uploads ZIP
 
 ## App Details
 
@@ -126,74 +133,222 @@ In ERPNext:
 
 Drive Bucket reuses this single shared Google OAuth app for all connected accounts.
 
+## Main Desk Screens
+
+- Control center: `/desk/cloud-backup`
+- Cloud Storage Account list: `/app/cloud-storage-account`
+- Individual account form: `/desk/cloud-storage-account/<record-name>`
+
+## How The Full Flow Works
+
+This is the recommended order for using the module.
+
+### 1. Manage connected drives from Cloud Backup
+
+Start from the `Drives` tab in the Cloud Backup control center.
+
+This tab is the main place to:
+
+- see all connected drives
+- identify the default fallback drive
+- review quota usage and free space
+- check connected / failed / queued counts
+- open Drive folders
+- run account actions like quota sync, ensure folders, ZIP download, and backup
+
+![Managed Drives](docs/images/drive1.png)
+
+### 2. Use Overview for operations and managed upload search
+
+The `Overview` tab shows the operational side of the system.
+
+From here you can:
+
+- view upload and backup summary cards
+- filter uploads by module and status
+- search routed uploads
+- select visible drives
+- run bulk actions:
+  - bulk sync
+  - bulk ensure folders
+  - bulk run backup
+  - bulk download ZIP
+- immediately review search results in the same screen
+
+![Overview and Managed Upload Results](docs/images/drive2.png)
+
+### 3. Import existing files from Google Drive
+
+The `Import From Google Drive` tab is used when a file already exists in Drive and you want to attach it into ERPNext.
+
+From this screen you can:
+
+- choose a connected Google account
+- search Drive files by name
+- preview the file
+- open it in Google Drive
+- attach it directly to a document
+
+This creates a standard ERPNext `File` attachment.
+
+![Import From Google Drive](docs/images/drive3.png)
+
+### 4. Configure each Cloud Storage Account
+
+Open the `Cloud Storage Account` form to configure how one drive behaves.
+
+This form is where you manage:
+
+- linked ERPNext user
+- default upload drive
+- default backup drive
+- fallback permission
+- auto sync for new uploads
+- backup interval in days
+- user access table
+- module routing table
+- quota values
+- reserve space and fallback priority
+
+The account form also provides direct actions such as:
+
+- `Connect Google Drive`
+- `Sync Quota`
+- `Ensure Backup Folders`
+- `Run Backup Now`
+- `Download Uploads ZIP`
+
+![Cloud Storage Account Form](docs/images/drive4.png)
+
 ## First-Time Setup Flow
 
-### 1. Open the Drive Bucket control center
+### 1. Open the Cloud Backup control center
 
 Desk route:
 
 ```text
-/app/cloud-backup
+/desk/cloud-backup
 ```
 
 ### 2. Connect Google Drive
 
 Use the `Connect Google Drive` button.
 
-This creates a `Cloud Storage Account` automatically.
+This creates a `Cloud Storage Account` automatically after OAuth succeeds.
 
-### 3. Set a default fallback drive
+### 3. Open the account and configure it
 
-Use the `Make Default` action on one connected account.
+Recommended fields to review first:
 
-This default drive is used when:
+- `Linked User`
+- `Default Upload Drive`
+- `Default Backup Drive`
+- `Allow Fallback Uploads`
+- `Auto Sync New Uploads`
+- `Backup Every (Days)`
+- `Reserve Space (GB)`
+- `Fallback Priority`
 
-- no user-linked drive is available
-- a linked drive is full
-- a file is saved by a user with no eligible connected drive
+### 4. Add module routing
 
-### 4. Verify folder creation
+In `Module Routes`, add the modules this drive should handle.
 
-Each connected drive should receive:
+Examples:
 
-- `erpnext_backup_private`
-- `erpnext_backup_public`
+- `Sales`
+- `Purchase`
+- `HR`
+- `Manufacturing`
+- custom app modules
+
+This keeps uploads organized by business area.
+
+### 5. Ensure folders
+
+Use `Ensure Folders` from:
+
+- the Cloud Backup `Drives` tab
+- or the `Cloud Storage Account` form
+
+The app creates and reuses the required Drive folders automatically.
+
+## Folder Structure
+
+Drive Bucket manages storage in a simple structure so users do not need to browse deep or guess where files went.
+
+Recommended structure:
+
+```text
+<connected Google Drive>
+├── erpnext_backup_private
+├── erpnext_backup_public
+└── database_backup
+    ├── 2026-07-24
+    ├── 2026-07-25
+    └── ...
+```
+
+Inside the public and private areas, the app can group files by configured module routes.
+
+Example:
+
+```text
+erpnext_backup_public
+├── Sales
+├── HR
+└── Manufacturing
+```
 
 ## Routing Logic
 
 When a new ERPNext file is saved:
 
-1. Drive Bucket checks the uploading user's linked drive
-2. If that drive is connected and not quota-limited, the file goes there
-3. If the user's drive is unavailable or full, the file goes to the default fallback drive
-4. If no default fallback is configured, upload routing may not complete for unmatched users
+1. Drive Bucket checks whether the document belongs to a routed module
+2. it finds eligible connected drives for that module
+3. it checks whether the drive is connected and has enough usable space
+4. it applies reserve space and fallback rules
+5. it uploads to Google Drive
+6. it stores the Google file ID and direct file link on the ERPNext `File`
 
-### Quota Handling
+### What happens if one drive is full
 
-Each `Cloud Storage Account` supports:
+Each account supports:
 
 - `reserve_space_gb`
 - `fallback_priority`
 - `allow_fallback`
-- `auto_sync_uploads`
 
-If used space reaches the effective threshold:
+If the remaining space reaches the reserve limit, that drive is treated as unavailable for new uploads.
 
-```text
-total_quota - reserve_space_gb
-```
+The app then tries the next eligible fallback drive.
 
-the account is treated as full for routing purposes.
+This means:
+
+- one full drive does not stop the whole upload flow
+- storage can be scaled across multiple Google accounts
+- users still get direct Drive access
+
+## Privacy Handling
+
+The app keeps `Public` and `Private` uploads separated.
+
+This affects:
+
+- which Drive folder receives the file
+- who should get access
+- how admins manage document visibility
 
 ## Cloud Storage Account Fields
 
-Key fields on `Cloud Storage Account`:
+Important fields on `Cloud Storage Account` include:
 
 - `account_email`
 - `linked_user`
 - `is_default_upload`
+- `is_default_backup_drive`
 - `allow_fallback`
 - `auto_sync_uploads`
+- `backup_every_days`
 - `fallback_priority`
 - `reserve_space_gb`
 - `connection_status`
@@ -203,74 +358,106 @@ Key fields on `Cloud Storage Account`:
 - `total_quota`
 - `last_synced`
 
-## File Upload Behavior
+## User Access and Permissions
+
+Each `Cloud Storage Account` includes a `User Access` child table.
+
+Use this to define who can:
+
+- view
+- upload
+- download
+- manage
+
+Typical setup examples:
+
+- HR users can access HR-related drives only
+- Sales users can access Sales-related drives only
+- Admins can manage shared fallback drives
+
+This keeps access simple and role-based without giving every user access to every Drive.
+
+## File Upload Metadata
 
 New ERPNext `File` records are uploaded automatically after save.
 
-Drive Bucket stores extra metadata on `File`:
+Drive Bucket stores extra metadata on `File`, including:
 
-- `drive_bucket_google_account`
-- `drive_bucket_google_file_id`
-- `drive_bucket_google_file_link`
-- `drive_bucket_drive_status`
-- `drive_bucket_last_shared_at`
+- uploaded Google account
+- Google Drive file ID
+- Google Drive file link
+- Drive upload status
 
-These fields are used for:
+These values are used for:
 
-- share management
-- Drive link opening
+- preview
+- open document actions
 - audit visibility
-
-## Manage Google Drive Access From ERPNext
-
-For newly uploaded files with stored Drive metadata, open the `File` record and use:
-
-- `Open in Google Drive`
-- `View Drive Access`
-- `Grant Drive Access`
-
-You can grant:
-
-- `reader`
-- `commenter`
-- `writer`
-
-to:
-
-- an ERPNext `User`
-- or any Google email address
-
-Note:
-
-- older files uploaded before Drive metadata support may not have a stored Google file ID
-- those files may need re-upload or a metadata backfill tool before access can be managed from ERPNext
+- retry or support troubleshooting
 
 ## Import From Google Drive
 
 The control center supports direct Google Drive import.
 
-From `/app/cloud-backup`:
+From `/desk/cloud-backup`:
 
-1. choose a connected account
-2. search Google Drive files
-3. click `Attach to Document`
-4. choose:
+1. open `Import From Google Drive`
+2. choose a connected account
+3. search Drive files
+4. click `Attach to Document`
+5. choose:
    - target DocType
    - target document name
    - optional target field
-   - private/public
+   - private or public attachment behavior if applicable
 
-This creates a normal ERPNext `File` attachment.
+## Backup Behavior
+
+Drive Bucket supports database backup uploads to Google Drive.
+
+### Account-level backup settings
+
+Use these fields on `Cloud Storage Account`:
+
+- `Default Backup Drive`
+- `Backup Every (Days)`
+
+If no backup interval is set, the system treats it as daily.
+
+### Manual backup
+
+You can manually run backup from:
+
+- the `Cloud Storage Account` form with `Run Backup Now`
+- the Cloud Backup `Drives` tab with `Run Backup`
+- the Cloud Backup `Overview` tab using bulk backup actions
+
+### Backup storage location
+
+Database backups are uploaded to the Drive backup folder and can be grouped by date.
+
+## ZIP Download
+
+Each connected account supports a ZIP download action for its routed uploads.
+
+You can download:
+
+- one account at a time from `Drives`
+- multiple selected accounts from `Overview`
+
+This is useful when users want one-click export instead of opening each file individually.
 
 ## Recommended Admin Policy
 
 For a client-ready setup:
 
-- connect one primary drive per active ERPNext user
+- connect one primary drive per active ERPNext user or business owner
 - configure exactly one default fallback drive
-- keep shared fallback drives separate from personal drives
-- review any `Guest`-linked drive accounts and convert them to a real owner if needed
-- keep `reserve_space_gb` above zero so fallback occurs before Google rejects uploads
+- configure one default backup drive
+- keep reserve space above zero
+- keep module routes explicit instead of leaving them ambiguous
+- review `User Access` permissions before going live
+- use backup intervals that match the business risk of the site
 
 ## Testing Checklist
 
@@ -283,8 +470,9 @@ After setup, test the following:
 
 ### Folder creation
 
-- private backup folder exists
-- public backup folder exists
+- private folder exists
+- public folder exists
+- backup folder exists
 
 ### Quota sync
 
@@ -294,22 +482,23 @@ After setup, test the following:
 
 ### Upload routing
 
-- upload a file as a user with a linked drive
-- confirm it lands in that user's Google Drive
-- mark another account as default fallback
-- confirm fallback works when the user has no eligible drive
+- upload a file as a user with a routed module
+- confirm it lands in the correct Drive
+- confirm the ERPNext `File` shows the Google link
+- confirm fallback works when the primary drive is near full
 
-### Access management
+### Import flow
 
-- upload a new private file
-- open the `File` record
-- use `Grant Drive Access`
-- confirm the recipient gets access in Google Drive
-
-### Drive import
-
-- import a file from Google Drive into ERPNext
+- search a Drive file
+- preview it
+- attach it to a document
 - verify the attachment appears on the target document
+
+### Backup flow
+
+- run `Run Backup Now`
+- confirm the backup file appears in Google Drive
+- confirm the backup log updates
 
 ## Troubleshooting
 
@@ -328,35 +517,33 @@ Enable Google Drive API:
 
 - https://console.cloud.google.com/apis/library/drive.googleapis.com
 
-### `Not permitted` on connect button
-
-Usually caused by:
-
-- wrong HTTP method on endpoint
-- permissions issue
-- stale cache after code changes
-
-Run:
-
-```bash
-bench --site <your-site> clear-cache
-bench --site <your-site> migrate
-```
-
 ### Connected account appears but folders or quota are missing
 
 Run:
 
 - `Sync Quota`
-- `Ensure Backup Folders`
+- `Ensure Folders`
 
 and confirm the connected Google account still has valid consent.
 
-### File uploads but share management is missing
+### Upload goes to fallback unexpectedly
 
-This usually means the file was uploaded before Drive metadata fields were added.
+Check:
 
-Re-upload the file or build a metadata backfill tool.
+- `reserve_space_gb`
+- `allow_fallback`
+- `fallback_priority`
+- module routes
+- connection status
+
+### Backup folder or backup file is missing
+
+Check:
+
+- the account is marked as `Default Backup Drive`
+- `Ensure Backup Folders` or `Ensure Folders` has been run
+- the backup interval is configured correctly
+- the OAuth token is still valid
 
 ## Bench Commands
 
@@ -369,11 +556,6 @@ bench --site <your-site> list-apps
 bench --site <your-site> execute drive_bucket.cloud_backup.api.control_center.get_console_data
 ```
 
-## Current Desk Routes
-
-- Drive control center: `/app/cloud-backup`
-- Accounts list: `/app/cloud-storage-account`
-
 ## Development Notes
 
 This app currently includes:
@@ -381,17 +563,12 @@ This app currently includes:
 - Google OAuth connection flow
 - quota sync
 - automatic upload routing
+- module-wise Drive routing
 - fallback drive logic
-- Drive import
-- Drive access grant flow
-
-Possible next enhancements:
-
-- backfill tool for older uploaded files
-- richer share management with revoke/update access
-- per-user preferred drive selection
-- folder browser UI instead of search-only import
-- upload routing audit trail per file
+- direct Google Drive import
+- account-level ZIP download
+- database backup upload
+- Cloud Backup control center
 
 ## License
 

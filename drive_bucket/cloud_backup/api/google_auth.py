@@ -3,13 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
-from urllib.parse import quote_plus, urlencode
+from urllib.parse import quote_plus, urlencode, urlsplit, urlunsplit
 
 import frappe
 import requests
 from frappe.utils import get_url, now_datetime
 
 from drive_bucket.cloud_backup.doctype.cloud_storage_account.cloud_storage_account import CloudStorageAccount
+from drive_bucket.permissions import require_cloud_storage_account_access
 
 GOOGLE_OAUTH_SCOPE = [
 	"https://www.googleapis.com/auth/drive.file",
@@ -25,6 +26,7 @@ FOLDER_NAMES = {
 	"private_folder_id": "erpnext_backup_private",
 	"public_folder_id": "erpnext_backup_public",
 }
+BACKUP_FOLDER_NAME = "Database backup"
 DEBUG_PREFIX = "[drive_bucket.google_auth]"
 BYTES_IN_GB = 1024**3
 
@@ -67,7 +69,7 @@ def get_connect_url() -> dict[str, str]:
 	)
 	return {"url": f"{GOOGLE_AUTH_URL}?{query}"}
 
-
+# drive_bucket.cloud_backup.api.google_auth.oauth_callback
 @frappe.whitelist(allow_guest=True, methods=["GET"])
 def oauth_callback(code: str | None = None, state: str | None = None, error: str | None = None) -> dict[str, Any]:
 	state_data = _consume_oauth_state(state)
@@ -175,7 +177,7 @@ def oauth_callback(code: str | None = None, state: str | None = None, error: str
 
 @frappe.whitelist(methods=["POST"])
 def sync_quota(account_name: str) -> dict[str, Any]:
-	account = _get_accessible_account(account_name)
+	account = _get_accessible_account(account_name, permission="manage")
 	return _sync_quota(account)
 
 
@@ -213,7 +215,7 @@ def _sync_quota(account: CloudStorageAccount) -> dict[str, Any]:
 
 @frappe.whitelist(methods=["POST"])
 def ensure_backup_folders(account_name: str) -> dict[str, str]:
-	account = _get_accessible_account(account_name)
+	account = _get_accessible_account(account_name, permission="manage")
 	return _ensure_backup_folders(account)
 
 
@@ -223,27 +225,136 @@ def _ensure_backup_folders(account: CloudStorageAccount) -> dict[str, str]:
 
 	for fieldname, folder_name in FOLDER_NAMES.items():
 		folder_id = getattr(account, fieldname, None)
-		if folder_id:
+		if folder_id and _folder_exists(access_token, folder_id, parent_id="root"):
 			_debug("Folder already present", account_name=account.name, fieldname=fieldname, folder_id=folder_id)
-			continue
-		existing_folder_id = _find_folder_id(access_token, folder_name)
-		if existing_folder_id:
-			setattr(account, fieldname, existing_folder_id)
-			updated = True
-			_debug("Found existing folder", account_name=account.name, fieldname=fieldname, folder_id=existing_folder_id)
-			continue
-		created_folder_id = _create_drive_folder(access_token, folder_name)
-		setattr(account, fieldname, created_folder_id)
-		updated = True
-		_debug("Created folder", account_name=account.name, fieldname=fieldname, folder_id=created_folder_id)
+		else:
+			if folder_id:
+				_debug(
+					"Stored folder missing, recreating",
+					account_name=account.name,
+					fieldname=fieldname,
+					folder_id=folder_id,
+				)
+			existing_folder_id = _find_folder_id(access_token, folder_name, parent_id="root")
+			if existing_folder_id:
+				setattr(account, fieldname, existing_folder_id)
+				updated = True
+				_debug("Found existing folder", account_name=account.name, fieldname=fieldname, folder_id=existing_folder_id)
+			else:
+				created_folder_id = _create_drive_folder(access_token, folder_name, parent_id="root")
+				setattr(account, fieldname, created_folder_id)
+				updated = True
+				_debug("Created folder", account_name=account.name, fieldname=fieldname, folder_id=created_folder_id)
+
+	if account.is_default_backup_drive:
+		backup_folder_id = getattr(account, "backup_folder_id", None)
+		if backup_folder_id and _folder_exists(access_token, backup_folder_id, parent_id="root"):
+			_debug("Backup folder already present", account_name=account.name, folder_id=backup_folder_id)
+		else:
+			existing_backup_folder_id = _find_folder_id(access_token, BACKUP_FOLDER_NAME, parent_id="root")
+			if existing_backup_folder_id:
+				account.backup_folder_id = existing_backup_folder_id
+				updated = True
+				_debug("Found existing backup folder", account_name=account.name, folder_id=existing_backup_folder_id)
+			else:
+				account.backup_folder_id = _create_drive_folder(access_token, BACKUP_FOLDER_NAME, parent_id="root")
+				updated = True
+				_debug("Created backup folder", account_name=account.name, folder_id=account.backup_folder_id)
+
+	_ensure_module_route_folders(account, access_token)
 
 	if updated:
 		account.save(ignore_permissions=True, ignore_version=True)
 
 	return {
+		"backup_folder_id": account.backup_folder_id or "",
 		"private_folder_id": account.private_folder_id or "",
 		"public_folder_id": account.public_folder_id or "",
 	}
+
+
+def _ensure_module_route_folders(account: CloudStorageAccount, access_token: str) -> None:
+	module_routes = account.get("module_routes") or []
+	if not module_routes:
+		return
+
+	updated = False
+	for row in module_routes:
+		module_name = (row.module or "").strip()
+		if not module_name:
+			continue
+
+		for fieldname, parent_folder_id in (
+			("private_folder_id", account.private_folder_id),
+			("public_folder_id", account.public_folder_id),
+		):
+			if not parent_folder_id:
+				continue
+			folder_id = row.get(fieldname)
+			if folder_id and _folder_exists(access_token, folder_id, parent_id=parent_folder_id):
+				continue
+			existing_folder_id = _find_folder_id(access_token, module_name, parent_id=parent_folder_id)
+			if existing_folder_id:
+				row.set(fieldname, existing_folder_id)
+			else:
+				row.set(fieldname, _create_drive_folder(access_token, module_name, parent_id=parent_folder_id))
+			updated = True
+
+	if updated:
+		account.save(ignore_permissions=True, ignore_version=True)
+
+
+def _folder_exists(access_token: str, folder_id: str, parent_id: str | None = None) -> bool:
+	response = requests.get(
+		f"{GOOGLE_FILES_URL}/{folder_id}",
+		headers={"Authorization": f"Bearer {access_token}"},
+		params={"fields": "id,trashed,mimeType,parents"},
+		timeout=30,
+	)
+	if not response.ok:
+		return False
+	payload = response.json()
+	return (
+		payload.get("mimeType") == "application/vnd.google-apps.folder"
+		and not payload.get("trashed")
+		and (not parent_id or parent_id in (payload.get("parents") or []))
+	)
+
+
+def _find_folder_id(access_token: str, folder_name: str, parent_id: str | None = None) -> str | None:
+	search_parts = [
+		f"name = '{folder_name}'",
+		"mimeType = 'application/vnd.google-apps.folder'",
+		"trashed = false",
+	]
+	if parent_id:
+		search_parts.append(f"'{parent_id}' in parents")
+
+	params = {
+		"q": " and ".join(search_parts),
+		"fields": "files(id,name)",
+		"pageSize": 1,
+	}
+	response = _google_get(GOOGLE_FILES_URL, access_token, params=params)
+	files = response.get("files") or []
+	return files[0]["id"] if files else None
+
+
+def _create_drive_folder(access_token: str, folder_name: str, parent_id: str | None = None) -> str:
+	payload = {"name": folder_name, "mimeType": "application/vnd.google-apps.folder"}
+	if parent_id:
+		payload["parents"] = [parent_id]
+	response = requests.post(
+		GOOGLE_FILES_URL,
+		headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"},
+		json=payload,
+		timeout=30,
+	)
+	data = _parse_google_response(response)
+	folder_id = data.get("id")
+	if not folder_id:
+		raise GoogleDriveError(f"Google Drive did not return a folder ID for {folder_name}.")
+	return folder_id
 
 
 def refresh_account_access_token(account_name: str) -> CloudStorageAccount:
@@ -292,11 +403,10 @@ def _get_or_create_account(account_email: str) -> CloudStorageAccount:
 	return account
 
 
-def _get_accessible_account(account_name: str) -> CloudStorageAccount:
+def _get_accessible_account(account_name: str, permission: str = "view") -> CloudStorageAccount:
 	account = frappe.get_doc(ACCOUNT_DOCTYPE, account_name)
-	if _is_storage_admin() or account.linked_user == frappe.session.user:
-		return account
-	raise frappe.PermissionError("You do not have access to this cloud storage account.")
+	require_cloud_storage_account_access(account.name, permission)
+	return account
 
 
 def _get_google_credentials() -> GoogleCredentials:
@@ -385,7 +495,7 @@ def _parse_google_response(response: requests.Response) -> dict[str, Any]:
 	error = payload.get("error")
 	error_message = error.get("message") if isinstance(error, dict) else error
 	message = payload.get("error_description") or error_message or response.text
-	_debug("Google response failed", status_code=response.status_code, url=str(response.url), message=message)
+	_debug("Google response failed", status_code=response.status_code, url=str(response.url), error_detail=message)
 	raise GoogleDriveError(message)
 
 
@@ -412,37 +522,21 @@ def _oauth_redirect_location(account_name: str | None, error: str | None) -> str
 	return f"{base_url}?{'&'.join(query_parts)}" if query_parts else base_url
 
 
-def _find_folder_id(access_token: str, folder_name: str) -> str | None:
-	params = {
-		"q": f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false",
-		"fields": "files(id,name)",
-		"pageSize": 1,
-	}
-	response = _google_get(GOOGLE_FILES_URL, access_token, params=params)
-	files = response.get("files") or []
-	return files[0]["id"] if files else None
-
-
-def _create_drive_folder(access_token: str, folder_name: str) -> str:
-	payload = {"name": folder_name, "mimeType": "application/vnd.google-apps.folder"}
-	response = requests.post(
-		GOOGLE_FILES_URL,
-		headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"},
-		json=payload,
-		timeout=30,
-	)
-	data = _parse_google_response(response)
-	folder_id = data.get("id")
-	if not folder_id:
-		raise GoogleDriveError(f"Google Drive did not return a folder ID for {folder_name}.")
-	return folder_id
 
 
 def _get_site_base_url() -> str:
 	host_name = (getattr(frappe.conf, "host_name", None) or "").rstrip("/")
 	if host_name:
-		return host_name
-	return get_url().rstrip("/")
+		return _normalize_public_url(host_name)
+	return _normalize_public_url(get_url().rstrip("/"))
+
+
+def _normalize_public_url(url: str) -> str:
+	parts = urlsplit(url)
+	netloc = parts.netloc
+	if netloc.endswith(".ngrok-free.app:8000"):
+		netloc = netloc.removesuffix(":8000")
+	return urlunsplit((parts.scheme, netloc, parts.path.rstrip("/"), "", ""))
 
 
 def _debug(message: str, **kwargs) -> None:

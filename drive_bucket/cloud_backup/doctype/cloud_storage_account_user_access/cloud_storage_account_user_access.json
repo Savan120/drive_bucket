@@ -1,0 +1,54 @@
+{
+ "actions": [],
+ "creation": "2026-07-24 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "can_view",
+  "can_upload",
+  "can_download",
+  "can_manage"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "can_view",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Can View"
+  },
+  {
+   "fieldname": "can_upload",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Can Upload"
+  },
+  {
+   "fieldname": "can_download",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Can Download"
+  },
+  {
+   "fieldname": "can_manage",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Can Manage"
+  }
+ ],
+ "istable": 1,
+ "module": "Drive Bucket",
+ "name": "Cloud Storage Account User Access",
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

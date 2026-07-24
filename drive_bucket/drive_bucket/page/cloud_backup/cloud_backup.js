@@ -10,7 +10,22 @@ class DriveBucketConsole {
 			title: __("Drive Bucket"),
 			single_column: true,
 		});
-		this.state = { accounts: [], summary: null, importedFiles: [], selectedAccount: null };
+		this.state = {
+			accounts: [],
+			summary: null,
+			importedFiles: [],
+			selectedAccount: null,
+			activeTab: "drives",
+			showAllAccounts: false,
+			selectedAccounts: [],
+			managedModuleFilter: "",
+			managedStatusFilter: "",
+			managedSearchQuery: "",
+			managedUploadResults: [],
+			moduleOptions: [],
+			managedUploadsPage: 1,
+			importDrivePage: 1,
+		};
 		this.injectStyles();
 		this.buildLayout();
 		this.bindActions();
@@ -191,6 +206,39 @@ class DriveBucketConsole {
 				display: grid;
 				gap: 12px;
 			}
+			.db-insight-grid,
+			.db-secondary-grid {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				margin-top: 18px;
+			}
+			.db-secondary-grid {
+				align-items: start;
+			}
+			.db-mini-stat {
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				border-radius: 22px;
+				padding: 16px 18px;
+				backdrop-filter: blur(14px);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+			}
+			.db-mini-stat-label {
+				font-size: 11px;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--db-muted);
+			}
+			.db-mini-stat-value {
+				margin-top: 8px;
+				font-size: 28px;
+				font-weight: 800;
+				color: var(--db-text);
+			}
+			.db-mini-stat-copy {
+				margin-top: 6px;
+				font-size: 12px;
+				color: var(--db-muted);
+			}
 			.db-chip-row {
 				grid-template-columns: repeat(3, minmax(0, 1fr));
 				margin-top: 18px;
@@ -267,6 +315,80 @@ class DriveBucketConsole {
 			.db-shell-grid {
 				grid-template-columns: 1fr;
 				margin-top: 20px;
+			}
+			.db-tabbar {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				margin-top: 20px;
+				padding: 8px;
+				border-radius: 20px;
+				background: rgba(255, 255, 255, 0.06);
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				backdrop-filter: blur(14px);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+			}
+			.db-tab {
+				border: 0;
+				border-radius: 14px;
+				padding: 11px 16px;
+				background: transparent;
+				color: var(--db-muted);
+				font-size: 13px;
+				font-weight: 700;
+				cursor: pointer;
+				transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+			}
+			.db-tab:hover {
+				color: var(--db-text);
+				background: rgba(255, 255, 255, 0.06);
+			}
+			.db-tab.is-active {
+				background: linear-gradient(180deg, rgba(103, 168, 255, 0.88), rgba(50, 111, 222, 0.9));
+				color: #ffffff;
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.18),
+					0 12px 24px rgba(26, 115, 232, 0.18);
+			}
+			.db-tab-panel {
+				display: none;
+			}
+			.db-tab-panel.is-active {
+				display: block;
+			}
+			.db-subtabbar {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				margin: 18px 0;
+				padding: 8px;
+				border-radius: 18px;
+				background: rgba(255, 255, 255, 0.06);
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				backdrop-filter: blur(14px);
+			}
+			.db-subtab {
+				border: 0;
+				border-radius: 14px;
+				padding: 10px 14px;
+				background: transparent;
+				color: var(--db-muted);
+				font-size: 12px;
+				font-weight: 700;
+				cursor: pointer;
+			}
+			.db-subtab.is-active {
+				background: linear-gradient(180deg, rgba(103, 168, 255, 0.88), rgba(50, 111, 222, 0.9));
+				color: #ffffff;
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.18),
+					0 10px 20px rgba(26, 115, 232, 0.18);
+			}
+			.db-subpanel {
+				display: none;
+			}
+			.db-subpanel.is-active {
+				display: block;
 			}
 			.db-card {
 				background: var(--db-card);
@@ -413,6 +535,50 @@ class DriveBucketConsole {
 				color: var(--db-text);
 			}
 			.db-btn.wide { width: 100%; justify-content: center; }
+			.db-toolbar-card {
+				margin-top: 18px;
+			}
+			.db-filter-grid {
+				display: grid;
+				grid-template-columns: repeat(5, minmax(0, 1fr));
+				gap: 10px;
+				margin-top: 14px;
+			}
+			.db-filter-grid input,
+			.db-filter-grid select {
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				background: rgba(255, 255, 255, 0.07);
+				color: var(--db-text);
+				border-radius: 16px;
+				padding: 10px 12px;
+				font-size: 13px;
+				backdrop-filter: blur(14px);
+				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+			}
+			.db-selection-bar {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				flex-wrap: wrap;
+				margin-top: 14px;
+			}
+			.db-selection-copy {
+				font-size: 12px;
+				color: var(--db-muted);
+			}
+			.db-pagination {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				flex-wrap: wrap;
+				margin-top: 14px;
+			}
+			.db-pagination-copy {
+				font-size: 12px;
+				color: var(--db-muted);
+			}
 			.db-policy-list {
 				margin-top: 14px;
 			}
@@ -440,14 +606,93 @@ class DriveBucketConsole {
 				backdrop-filter: blur(14px);
 				box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 			}
+			.db-import-item.compact {
+				padding: 10px 14px;
+			}
 			.db-log-item strong,
 			.db-import-item strong {
 				display: block;
 				color: var(--db-text);
 			}
+			.db-import-item.compact strong {
+				font-size: 15px;
+				line-height: 1.2;
+			}
+			.db-log-attach {
+				margin-top: 8px;
+				font-size: 12px;
+				color: var(--db-muted);
+				overflow-wrap: anywhere;
+			}
+			.db-log-attach strong {
+				display: inline;
+				margin-right: 6px;
+				font-size: 11px;
+				letter-spacing: 0.05em;
+				text-transform: uppercase;
+				color: var(--db-muted);
+			}
 			.db-log-row span,
 			.db-import-item span {
 				color: var(--db-muted);
+			}
+			.db-warning-list,
+			.db-badge-row,
+			.db-folder-row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+				margin-top: 10px;
+			}
+			.db-warning {
+				padding: 6px 10px;
+				border-radius: 999px;
+				font-size: 11px;
+				font-weight: 700;
+				background: var(--db-danger-soft);
+				color: var(--db-red);
+				border: 1px solid rgba(255, 142, 136, 0.18);
+			}
+			.db-detail-line {
+				margin-top: 8px;
+				font-size: 12px;
+				color: var(--db-muted);
+				overflow-wrap: anywhere;
+			}
+			.db-result-meta {
+				margin-top: 8px;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+			.db-import-item.compact .db-log-row,
+			.db-import-item.compact .db-result-meta,
+			.db-import-item.compact .db-detail-line {
+				margin-top: 6px;
+			}
+			.db-import-item.compact .db-detail-line {
+				font-size: 11px;
+			}
+			.db-import-item.compact .db-action-row {
+				margin-top: 8px !important;
+				gap: 8px;
+			}
+			.db-import-item.compact .db-btn {
+				padding: 8px 12px;
+				font-size: 11px;
+				border-radius: 14px;
+			}
+			.db-checkbox {
+				width: 18px;
+				height: 18px;
+				accent-color: #4f8dff;
+				cursor: pointer;
+			}
+			.db-account-top {
+				display: flex;
+				align-items: flex-start;
+				justify-content: space-between;
+				gap: 10px;
 			}
 			.db-empty {
 				border: 1px dashed rgba(255, 255, 255, 0.16);
@@ -617,10 +862,43 @@ class DriveBucketConsole {
 			:root:not([data-theme="dark"]) .db-search-row select,
 			:root:not([data-theme="dark"]) .db-btn.secondary,
 			:root:not([data-theme="dark"]) .db-btn.ghost,
-			:root:not([data-theme="dark"]) .db-collapse-toggle {
+			:root:not([data-theme="dark"]) .db-collapse-toggle,
+			:root:not([data-theme="dark"]) .db-tabbar {
 				background: rgba(255, 255, 255, 0.78);
 				color: #1b2a44;
 				border-color: rgba(108, 140, 189, 0.18);
+			}
+			:root:not([data-theme="dark"]) .db-tab {
+				color: #506789;
+				background: transparent;
+				border: 1px solid transparent;
+			}
+			:root:not([data-theme="dark"]) .db-tab:hover {
+				color: #1b2a44;
+				background: rgba(62, 120, 245, 0.12);
+				border-color: rgba(89, 132, 207, 0.18);
+			}
+			:root:not([data-theme="dark"]) .db-tab.is-active {
+				background: linear-gradient(180deg, #6ea8ff 0%, #3f7ef5 100%);
+				color: #ffffff;
+				border-color: rgba(50, 98, 196, 0.28);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.24),
+					0 10px 22px rgba(65, 114, 214, 0.22);
+			}
+			:root:not([data-theme="dark"]) .db-tabbar {
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(243, 247, 255, 0.9));
+				border-color: rgba(125, 153, 202, 0.22);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.9),
+					0 16px 28px rgba(86, 116, 163, 0.08);
+			}
+			:root:not([data-theme="dark"]) .db-subtabbar {
+				background: rgba(255, 255, 255, 0.78);
+				border-color: rgba(108, 140, 189, 0.18);
+			}
+			:root:not([data-theme="dark"]) .db-subtab {
+				color: rgba(71, 95, 135, 0.8);
 			}
 			:root:not([data-theme="dark"]) .db-search-row input::placeholder {
 				color: rgba(93, 113, 145, 0.68);
@@ -631,7 +909,10 @@ class DriveBucketConsole {
 			}
 			@media (max-width: 1100px) {
 				.db-hero,
-				.db-shell-grid { grid-template-columns: 1fr; }
+				.db-shell-grid,
+				.db-insight-grid,
+				.db-secondary-grid,
+				.db-filter-grid { grid-template-columns: 1fr; }
 			}
 			@media (max-width: 760px) {
 				.db-chip-row,
@@ -675,29 +956,87 @@ class DriveBucketConsole {
 						</div>
 					</div>
 				</section>
-				<div class="db-shell-grid">
-					<section class="db-card">
-						<div class="db-section-head">
-							<div>
-								<h3>Managed Drives</h3>
-								<p>Ownership, quota, fallback, and recent uploads.</p>
+					<div class="db-tabbar" role="tablist" aria-label="${__("Cloud Backup Sections")}">
+						<button class="db-tab is-active js-tab-trigger" type="button" role="tab" aria-selected="true" data-tab="drives">${__("Drives")}</button>
+						<button class="db-tab js-tab-trigger" type="button" role="tab" aria-selected="false" data-tab="overview">${__("Overview")}</button>
+						<button class="db-tab js-tab-trigger" type="button" role="tab" aria-selected="false" data-tab="backups">${__("Backups")}</button>
+						<button class="db-tab js-tab-trigger" type="button" role="tab" aria-selected="false" data-tab="import-drive">${__("Import From Google Drive")}</button>
+					</div>
+						<div class="db-shell-grid">
+						<section class="db-tab-panel is-active js-tab-panel" data-tab="drives" role="tabpanel">
+							<div class="db-card">
+								<div class="db-section-head">
+									<div>
+										<h3>Managed Drives</h3>
+										<p>Ownership, routing, quota, folders, permissions, and recent uploads.</p>
+									</div>
+									<button class="db-collapse-toggle js-collapse-toggle" style="display:none;">${__("Show More")}</button>
+								</div>
+								<div class="db-account-grid js-account-grid"></div>
 							</div>
-							<button class="db-collapse-toggle js-collapse-toggle" style="display:none;">${__("Show More")}</button>
-						</div>
-						<div class="db-account-grid js-account-grid"></div>
-					</section>
-					<section class="db-card">
-						<div class="db-section-head">
-							<div>
-								<h3>Import From Google Drive</h3>
-								<p>Search a connected drive and attach the file into ERPNext.</p>
+						</section>
+								<section class="db-tab-panel js-tab-panel" data-tab="overview" role="tabpanel">
+										<div class="db-insight-grid js-managed-stats"></div>
+										<div class="db-card db-toolbar-card">
+											<div class="db-section-head">
+											<div>
+												<h3>Operations</h3>
+												<p>Filter by module, search managed uploads, and run bulk actions on the drives selected above.</p>
+											</div>
+										</div>
+										<div class="db-filter-grid">
+											<select class="js-managed-module-filter"></select>
+											<select class="js-managed-status-filter"></select>
+											<input type="text" class="js-managed-search-query" placeholder="Search uploads already routed by the system" />
+											<button class="db-btn secondary js-managed-search">${__("Search Uploads")}</button>
+										</div>
+										<div class="db-selection-bar">
+											<div class="db-selection-copy js-selected-copy">${__("0 drives selected")}</div>
+											<div class="db-action-row">
+												<button class="db-btn ghost js-select-visible">${__("Select Visible")}</button>
+												<button class="db-btn ghost js-clear-selection">${__("Clear Selection")}</button>
+												<button class="db-btn secondary js-bulk-action" data-action="sync">${__("Bulk Sync")}</button>
+												<button class="db-btn secondary js-bulk-action" data-action="ensure">${__("Bulk Ensure Folders")}</button>
+												<button class="db-btn secondary js-bulk-action" data-action="backup">${__("Bulk Run Backup")}</button>
+												<button class="db-btn primary js-bulk-action" data-action="zip">${__("Bulk Download ZIP")}</button>
+											</div>
+											</div>
+										</div>
+										<div class="db-card">
+											<div class="db-section-head">
+												<div>
+													<h3>Managed Upload Results</h3>
+													<p>See routed uploads right after search with document, module, and preview actions.</p>
+												</div>
+											</div>
+											<div class="db-import-list js-managed-upload-results"></div>
+										</div>
+								</section>
+						<section class="db-tab-panel js-tab-panel" data-tab="backups" role="tabpanel">
+							<section class="db-card">
+								<div class="db-section-head">
+									<div>
+										<h3>Recent Backups</h3>
+										<p>Track backup freshness, latest database files, and overdue accounts.</p>
+									</div>
+								</div>
+								<div class="db-log-list js-backup-watchlist"></div>
+							</section>
+						</section>
+						<section class="db-tab-panel js-tab-panel" data-tab="import-drive" role="tabpanel">
+							<div class="db-card">
+								<div class="db-section-head">
+									<div>
+									<h3>Import From Google Drive</h3>
+									<p>Search a connected drive and attach the file into ERPNext.</p>
+								</div>
 							</div>
+							<div class="db-search-row">
+								<select class="js-account-selector"></select>
+								<input type="text" class="js-search-query" placeholder="Search Google Drive files by name" />
+							</div>
+							<div class="db-import-list js-import-list" style="margin-top:14px;"></div>
 						</div>
-						<div class="db-search-row">
-							<select class="js-account-selector"></select>
-							<input type="text" class="js-search-query" placeholder="Search Google Drive files by name" />
-						</div>
-						<div class="db-import-list js-import-list" style="margin-top:14px;"></div>
 					</section>
 				</div>
 			</div>
@@ -707,13 +1046,53 @@ class DriveBucketConsole {
 
 	bindActions() {
 		this.$root.on("click", ".js-connect-drive", () => this.connectDrive());
-		this.$root.on("click", ".js-refresh-console", () => this.load());
+		this.$root.on("click", ".js-refresh-console", async () => {
+			frappe.show_alert({ message: __("Refreshing Cloud Backup console..."), indicator: "blue" });
+			await this.load();
+			frappe.show_alert({ message: __("Cloud Backup console refreshed."), indicator: "green" });
+		});
 		this.$root.on("click", ".js-set-default", (event) => this.setDefault($(event.currentTarget).data("account")));
 		this.$root.on("click", ".js-open-account", (event) => frappe.set_route("Form", "Cloud Storage Account", $(event.currentTarget).data("account")));
 		this.$root.on("click", ".js-sync-account", (event) => this.syncAccount($(event.currentTarget).data("account")));
 		this.$root.on("click", ".js-search-drive", () => this.searchDriveFiles());
 		this.$root.on("click", ".js-import-drive-file", (event) => this.promptImport($(event.currentTarget).data("account"), $(event.currentTarget).data("file-id")));
+		this.$root.on("click", ".js-open-attached-doc", (event) => {
+			const $button = $(event.currentTarget);
+			frappe.set_route("Form", $button.data("doctype"), $button.data("name"));
+		});
+		this.$root.on("click", ".js-open-folder", (event) => {
+			const url = $(event.currentTarget).data("url");
+			if (url) {
+				window.open(url, "_blank", "noopener,noreferrer");
+			}
+		});
+		this.$root.on("click", ".js-download-account-zip", (event) => this.downloadAccountZip($(event.currentTarget).data("account")));
+		this.$root.on("click", ".js-run-backup", (event) => this.runBackup($(event.currentTarget).data("account")));
+		this.$root.on("click", ".js-ensure-folders", (event) => this.ensureFolders($(event.currentTarget).data("account")));
+		this.$root.on("click", ".js-retry-upload", (event) => this.retryUpload($(event.currentTarget).data("account"), $(event.currentTarget).data("file-record")));
+		this.$root.on("click", ".js-managed-search", () => this.searchManagedUploads());
+		this.$root.on("click", ".js-bulk-action", (event) => this.runBulkAction($(event.currentTarget).data("action")));
+		this.$root.on("click", ".js-select-visible", () => this.selectVisibleAccounts());
+			this.$root.on("click", ".js-clear-selection", () => this.clearSelection());
+			this.$root.on("click", ".js-managed-page", (event) => this.changeManagedUploadsPage($(event.currentTarget).data("page")));
+			this.$root.on("click", ".js-import-page", (event) => this.changeImportPage($(event.currentTarget).data("page")));
+			this.$root.on("change", ".js-select-account", (event) => this.toggleAccountSelection($(event.currentTarget).data("account"), event.currentTarget.checked));
+		this.$root.on("change", ".js-managed-module-filter", (event) => {
+			this.state.managedModuleFilter = $(event.currentTarget).val() || "";
+			this.render();
+		});
+		this.$root.on("change", ".js-managed-status-filter", (event) => {
+			this.state.managedStatusFilter = $(event.currentTarget).val() || "";
+			this.renderManagedUploadResults();
+		});
 		this.$root.on("click", ".js-collapse-toggle", () => this.toggleManagedDrives());
+		this.$root.on("click", ".js-tab-trigger", (event) => this.setActiveTab($(event.currentTarget).data("tab")));
+		this.$root.on("keydown", ".js-managed-search-query", (event) => {
+			if (event.key === "Enter") {
+				event.preventDefault();
+				this.searchManagedUploads();
+			}
+		});
 		this.$root.on("keydown", ".js-search-query", (event) => {
 			if (event.key === "Enter") {
 				event.preventDefault();
@@ -723,18 +1102,55 @@ class DriveBucketConsole {
 	}
 
 	async load() {
+			const preservedState = {
+				activeTab: this.state.activeTab,
+				showAllAccounts: this.state.showAllAccounts,
+				selectedAccounts: this.state.selectedAccounts || [],
+				managedModuleFilter: this.state.managedModuleFilter || "",
+				managedStatusFilter: this.state.managedStatusFilter || "",
+				managedSearchQuery: this.state.managedSearchQuery || "",
+				managedUploadResults: this.state.managedUploadResults || [],
+				managedUploadsPage: this.state.managedUploadsPage || 1,
+				importDrivePage: this.state.importDrivePage || 1,
+			};
 		const { message } = await frappe.call({
 			method: "drive_bucket.cloud_backup.api.control_center.get_console_data",
 		});
-		this.state = message || { accounts: [], summary: {}, policies: [] };
+		this.state = {
+			...(message || { accounts: [], summary: {}, policies: [] }),
+			...preservedState,
+		};
 		this.state.selectedAccount = this.state.accounts[0]?.name || null;
+		this.state.moduleOptions = message?.module_options || [];
+		this.state.selectedAccounts = (this.state.selectedAccounts || []).filter((accountName) =>
+			(this.state.accounts || []).some((account) => account.name === accountName)
+		);
 		this.render();
 	}
 
 	render() {
 		this.renderSummary();
-		this.renderAccounts();
-		this.renderAccountSelector();
+		this.renderManagedStats();
+		this.renderManagedFilters();
+			this.renderBackupWatchlist();
+			this.renderAccounts();
+			this.renderAccountSelector();
+			this.renderManagedUploadResults();
+			this.renderTabs();
+		}
+
+	renderTabs() {
+		const activeTab = this.state.activeTab || "drives";
+		this.$root.find(".js-tab-trigger").each((_, element) => {
+			const $button = $(element);
+			const isActive = $button.data("tab") === activeTab;
+			$button.toggleClass("is-active", isActive);
+			$button.attr("aria-selected", isActive ? "true" : "false");
+		});
+		this.$root.find(".js-tab-panel").each((_, element) => {
+			const $panel = $(element);
+			$panel.toggleClass("is-active", $panel.data("tab") === activeTab);
+		});
 	}
 
 	renderSummary() {
@@ -758,22 +1174,66 @@ class DriveBucketConsole {
 		this.$root.find(".js-default-meta").text(summary.default_account || "Not configured");
 	}
 
+	renderManagedStats() {
+		const summary = this.state.summary || {};
+		const stats = [
+			{ label: "Uploaded Today", value: summary.uploaded_today || 0, copy: "Successful routed uploads today" },
+			{ label: "Failed Uploads", value: summary.failed_uploads || 0, copy: "Failures that need attention or retry" },
+			{ label: "Queued Uploads", value: summary.queued_uploads || 0, copy: "Uploads waiting in the pipeline" },
+			{ label: "Backup Due", value: summary.backup_due_accounts || 0, copy: "Drive accounts that should run backup" },
+		];
+		this.$root.find(".js-managed-stats").html(stats.map((stat) => `
+			<div class="db-mini-stat">
+				<div class="db-mini-stat-label">${frappe.utils.escape_html(stat.label)}</div>
+				<div class="db-mini-stat-value">${frappe.utils.escape_html(String(stat.value))}</div>
+				<div class="db-mini-stat-copy">${frappe.utils.escape_html(stat.copy)}</div>
+			</div>
+		`).join(""));
+	}
+
+	renderManagedFilters() {
+		const moduleOptions = this.state.moduleOptions || [];
+		this.$root.find(".js-managed-module-filter").html([
+			`<option value="">${__("All Modules")}</option>`,
+			...moduleOptions.map((moduleName) => `<option value="${frappe.utils.escape_html(moduleName)}" ${this.state.managedModuleFilter === moduleName ? "selected" : ""}>${frappe.utils.escape_html(moduleName)}</option>`),
+		].join(""));
+		this.$root.find(".js-managed-status-filter").html([
+			{ value: "", label: __("Any Status") },
+			{ value: "Uploaded", label: __("Uploaded") },
+			{ value: "Failed", label: __("Failed") },
+			{ value: "Queued", label: __("Queued") },
+		].map((option) => `<option value="${frappe.utils.escape_html(option.value)}" ${this.state.managedStatusFilter === option.value ? "selected" : ""}>${frappe.utils.escape_html(option.label)}</option>`).join(""));
+		this.$root.find(".js-managed-search-query").val(this.state.managedSearchQuery || "");
+		this.$root.find(".js-selected-copy").text(__("{0} drives selected", [this.state.selectedAccounts.length || 0]));
+	}
+
+	getVisibleAccounts() {
+		const moduleFilter = this.state.managedModuleFilter || "";
+		return (this.state.accounts || []).filter((account) => {
+			if (!moduleFilter) {
+				return true;
+			}
+			return (account.module_routes || []).includes(moduleFilter);
+		});
+	}
+
 	renderAccounts() {
 		const $grid = this.$root.find(".js-account-grid");
 		const $toggle = this.$root.find(".js-collapse-toggle");
-		if (!this.state.accounts.length) {
+		const visibleAccounts = this.getVisibleAccounts();
+		if (!visibleAccounts.length) {
 			$grid.html(`<div class="db-empty">No Google Drive accounts are connected yet.</div>`);
 			$toggle.hide();
 			return;
 		}
 
-		const shouldCollapse = this.state.accounts.length > 5 && !this.state.showAllAccounts;
+		const shouldCollapse = visibleAccounts.length > 5 && !this.state.showAllAccounts;
 		$grid.toggleClass("is-collapsed", shouldCollapse);
 		$toggle
-			.toggle(this.state.accounts.length > 5)
+			.toggle(visibleAccounts.length > 5)
 			.text(this.state.showAllAccounts ? __("Show Less") : __("Show More"));
 
-		$grid.html(this.state.accounts.map((account) => {
+		$grid.html(visibleAccounts.map((account) => {
 			const percent = Math.min(account.usage_percent || 0, 100);
 			const statusClass = account.connection_status === "Connected" ? "green" : "red";
 			const fullBadge = account.is_full ? `<span class="db-pill red">Quota Full</span>` : `<span class="db-pill blue">Free ${account.free_space_gb} GB</span>`;
@@ -781,51 +1241,151 @@ class DriveBucketConsole {
 				? `<span class="db-pill red">Shared / Guest</span>`
 				: `<span class="db-pill slate">${frappe.utils.escape_html(account.linked_user || "No user selected")}</span>`;
 			const defaultBadge = account.is_default_upload ? `<span class="db-pill default-flag">Default Fallback</span>` : "";
+			const accessSummary = account.access_summary || {};
+			const folderLinks = account.folder_links || {};
+			const warningList = account.health_warnings || [];
 			return `
 				<article class="db-account-card ${account.is_default_upload ? "is-default" : ""}">
-					<div class="db-account-row">
+					<div class="db-account-top">
 						<div class="db-account-title-wrap">
-							<div class="db-card-title">${frappe.utils.escape_html(account.account_email)}</div>
+							<div class="db-account-row">
+								<div class="db-card-title">${frappe.utils.escape_html(account.account_email)}</div>
+								<span class="db-pill ${statusClass}">${frappe.utils.escape_html(account.connection_status || "Unknown")}</span>
+							</div>
 							<div class="db-card-subtitle">Reserve ${account.reserve_space_gb} GB before fallback triggers</div>
 						</div>
-						<span class="db-pill ${statusClass}">${frappe.utils.escape_html(account.connection_status || "Unknown")}</span>
+						<input class="db-checkbox js-select-account" type="checkbox" data-account="${frappe.utils.escape_html(account.name)}" ${this.state.selectedAccounts.includes(account.name) ? "checked" : ""} />
 					</div>
-					<div class="db-account-meta">
-						${defaultBadge}
-						<span class="db-pill gold">${account.is_default_upload ? "Default Fallback Drive" : "Primary User Drive"}</span>
-						${ownerBadge}
-						${fullBadge}
-					</div>
-					<div>
 						<div class="db-account-meta">
-							<strong>${account.used_space} GB</strong>
-							<span>${account.total_quota} GB</span>
+							${defaultBadge}
+							<span class="db-pill gold">${account.is_default_upload ? "Default Fallback Drive" : "Primary User Drive"}</span>
+							${ownerBadge}
+							${fullBadge}
+						</div>
+						<div class="db-badge-row">
+							<span class="db-pill blue">${__("Today")} ${frappe.utils.escape_html(String(account.uploaded_today_count || 0))}</span>
+							<span class="db-pill ${account.failed_upload_count ? "red" : "slate"}">${__("Failed")} ${frappe.utils.escape_html(String(account.failed_upload_count || 0))}</span>
+							<span class="db-pill ${account.queued_upload_count ? "gold" : "slate"}">${__("Queued")} ${frappe.utils.escape_html(String(account.queued_upload_count || 0))}</span>
+							${(account.module_routes || []).slice(0, 2).map((moduleName) => `<span class="db-pill slate">${frappe.utils.escape_html(moduleName)}</span>`).join("")}
+						</div>
+						<div>
+							<div class="db-account-meta">
+								<strong>${account.used_space} GB</strong>
+								<span>${account.total_quota} GB</span>
 						</div>
 						<div class="db-meter" style="margin-top:8px;"><span style="width:${percent}%;"></span></div>
+						</div>
+						<div class="db-card-subtitle">Fallback: ${account.allow_fallback ? "Allowed" : "Blocked"} | Auto Sync: ${account.auto_sync_uploads ? "On" : "Off"} | Priority: ${account.fallback_priority}</div>
+						${account.status_note ? `<div class="db-card-subtitle">${frappe.utils.escape_html(account.status_note)}</div>` : ""}
+						${warningList.length ? `<div class="db-warning-list">${warningList.map((warning) => `<span class="db-warning">${frappe.utils.escape_html(warning)}</span>`).join("")}</div>` : ""}
+						<div class="db-detail-line">${__("Users")}: ${frappe.utils.escape_html((accessSummary.users || []).join(", ") || "No extra users")} ${accessSummary.has_more_users ? `+${accessSummary.user_count - 4}` : ""}</div>
+						<div class="db-detail-line">${__("Permissions")}: ${__("View")} ${frappe.utils.escape_html(String(accessSummary.view_count || 0))} | ${__("Upload")} ${frappe.utils.escape_html(String(accessSummary.upload_count || 0))} | ${__("Download")} ${frappe.utils.escape_html(String(accessSummary.download_count || 0))} | ${__("Manage")} ${frappe.utils.escape_html(String(accessSummary.manage_count || 0))}</div>
+						<div class="db-detail-line">${__("Backup")}: ${account.backup_summary?.latest_timestamp ? frappe.datetime.str_to_user(account.backup_summary.latest_timestamp) : __("No DB backup yet")} ${account.backup_due ? `| ${__("Due")}` : ""}</div>
+						<div class="db-action-row">
+							<button class="db-btn secondary js-open-account" data-account="${frappe.utils.escape_html(account.name)}">${__("Open Account")}</button>
+							<button class="db-btn ghost js-sync-account" data-account="${frappe.utils.escape_html(account.name)}">${__("Sync Quota")}</button>
+							<button class="db-btn ghost js-ensure-folders" data-account="${frappe.utils.escape_html(account.name)}">${__("Ensure Folders")}</button>
+							<button class="db-btn ghost js-download-account-zip" data-account="${frappe.utils.escape_html(account.name)}">${__("Download ZIP")}</button>
+							${account.is_default_backup_drive ? `<button class="db-btn ghost js-run-backup" data-account="${frappe.utils.escape_html(account.name)}">${__("Run Backup")}</button>` : ""}
+							${account.is_default_upload ? "" : `<button class="db-btn primary js-set-default" data-account="${frappe.utils.escape_html(account.name)}">${__("Make Default")}</button>`}
+						</div>
+						<div class="db-folder-row">
+							${folderLinks.private ? `<button class="db-btn ghost js-open-folder" data-url="${frappe.utils.escape_html(folderLinks.private)}">${__("Private Folder")}</button>` : ""}
+							${folderLinks.public ? `<button class="db-btn ghost js-open-folder" data-url="${frappe.utils.escape_html(folderLinks.public)}">${__("Public Folder")}</button>` : ""}
+							${folderLinks.backup ? `<button class="db-btn ghost js-open-folder" data-url="${frappe.utils.escape_html(folderLinks.backup)}">${__("Database backup")}</button>` : ""}
+						</div>
+					</article>
+				`;
+			}).join(""));
+	}
+
+	renderBackupWatchlist() {
+		const visibleAccounts = this.getVisibleAccounts();
+		const $list = this.$root.find(".js-backup-watchlist");
+		if (!visibleAccounts.length) {
+			$list.html(`<div class="db-empty">No backup-enabled drives match the current filters.</div>`);
+			return;
+		}
+
+		const items = visibleAccounts
+			.filter((account) => account.is_default_backup_drive || account.backup_summary?.latest_timestamp)
+			.map((account) => `
+				<div class="db-log-item">
+					<strong>${frappe.utils.escape_html(account.account_email)}</strong>
+					<div class="db-log-row">
+						<span>${account.backup_summary?.latest_file_name ? frappe.utils.escape_html(account.backup_summary.latest_file_name) : __("No DB backup yet")}</span>
+						<span>${account.backup_summary?.latest_timestamp ? frappe.datetime.str_to_user(account.backup_summary.latest_timestamp) : "-"}</span>
 					</div>
-					<div class="db-card-subtitle">Fallback: ${account.allow_fallback ? "Allowed" : "Blocked"} | Auto Sync: ${account.auto_sync_uploads ? "On" : "Off"} | Priority: ${account.fallback_priority}</div>
-					${account.status_note ? `<div class="db-card-subtitle">${frappe.utils.escape_html(account.status_note)}</div>` : ""}
-					<div class="db-action-row">
-						<button class="db-btn secondary js-open-account" data-account="${frappe.utils.escape_html(account.name)}">${__("Open Account")}</button>
-						<button class="db-btn ghost js-sync-account" data-account="${frappe.utils.escape_html(account.name)}">${__("Sync Quota")}</button>
-						${account.is_default_upload ? "" : `<button class="db-btn primary js-set-default" data-account="${frappe.utils.escape_html(account.name)}">${__("Make Default")}</button>`}
+					<div class="db-detail-line">${__("Every")}: ${frappe.utils.escape_html(String(account.backup_summary?.backup_every_days || 1))} ${__("day(s)")} | ${__("Last Backup On")}: ${frappe.utils.escape_html(account.backup_summary?.last_backup_on || "Not set")}</div>
+					<div class="db-action-row" style="margin-top:10px;">
+						${account.folder_links?.backup ? `<button class="db-btn ghost js-open-folder" data-url="${frappe.utils.escape_html(account.folder_links.backup)}">${__("Open Backup Folder")}</button>` : ""}
+						${account.is_default_backup_drive ? `<button class="db-btn secondary js-run-backup" data-account="${frappe.utils.escape_html(account.name)}">${__("Run Backup Now")}</button>` : ""}
 					</div>
-					<div class="db-log-list">
-						${(account.recent_logs || []).length ? (account.recent_logs || []).map((log) => `
-							<div class="db-log-item">
-								<strong>${frappe.utils.escape_html(log.file_name || "Unknown file")}</strong>
-								<div class="db-log-row">
-									<span>${frappe.utils.escape_html(log.folder_type || "-")} | ${frappe.utils.escape_html(log.status || "-")}</span>
-									<span>${frappe.datetime.str_to_user(log.timestamp)}</span>
-								</div>
-								${log.error_message ? `<div class="db-card-subtitle">${frappe.utils.escape_html(log.error_message)}</div>` : ""}
-							</div>
-						`).join("") : `<div class="db-empty">No uploads logged for this drive yet.</div>`}
-						${account.recent_log_count > 6 ? `<div class="db-card-subtitle">Showing latest 6 uploads. Open Account to review full history.</div>` : ""}
+				</div>
+			`);
+
+		$list.html(items.length ? items.join("") : `<div class="db-empty">No database backup activity is available yet.</div>`);
+	}
+
+	renderManagedUploadResults() {
+		const $list = this.$root.find(".js-managed-upload-results");
+		const results = (this.state.managedUploadResults || []).length
+			? this.state.managedUploadResults
+			: this.getSeedManagedUploads();
+		const statusFilter = this.state.managedStatusFilter || "";
+		const filteredResults = statusFilter ? results.filter((item) => item.status === statusFilter) : results;
+		const pageData = this.paginateItems(filteredResults, this.state.managedUploadsPage || 1, 5);
+		if (!filteredResults.length) {
+			$list.html(`<div class="db-empty">No managed uploads matched the current filters.</div>`);
+			return;
+		}
+		this.state.managedUploadsPage = pageData.currentPage;
+		$list.html(`
+			${pageData.items.map((file) => `
+				<div class="db-import-item compact">
+					<strong>${frappe.utils.escape_html(file.file_name || "Unknown file")}</strong>
+					<div class="db-log-row">
+						<span>${frappe.utils.escape_html(file.attached_label || "Not attached")}</span>
+						<span>${file.modified ? frappe.datetime.str_to_user(file.modified) : "-"}</span>
 					</div>
-				</article>
-			`;
-		}).join(""));
+				<div class="db-result-meta">
+					${file.module_name ? `<span class="db-pill slate">${frappe.utils.escape_html(file.module_name)}</span>` : ""}
+					${file.account_name ? `<span class="db-pill blue">${frappe.utils.escape_html(this.getAccountLabel(file.account_name))}</span>` : ""}
+					${file.status ? `<span class="db-pill ${file.status === "Failed" ? "red" : file.status === "Queued" ? "gold" : "green"}">${frappe.utils.escape_html(file.status)}</span>` : ""}
+					${file.is_private ? `<span class="db-pill gold">${__("Private")}</span>` : `<span class="db-pill blue">${__("Public")}</span>`}
+				</div>
+				<div class="db-detail-line">${__("Owner")}: ${frappe.utils.escape_html(file.owner || "-")}</div>
+				<div class="db-action-row" style="margin-top:10px;">
+					${file.preview_url ? `<a class="db-btn ghost" href="${frappe.utils.escape_html(file.preview_url)}" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye" aria-hidden="true" style="margin-right:6px;"></i>${__("Preview")}</a>` : ""}
+					${file.attached_route ? `<button class="db-btn secondary js-open-attached-doc" data-doctype="${frappe.utils.escape_html(file.attached_route.doctype)}" data-name="${frappe.utils.escape_html(file.attached_route.name)}">${__("Open Doc")}</button>` : ""}
+				</div>
+			</div>
+		`).join("")}
+			${this.renderPagination("managed", pageData)}
+		`);
+	}
+
+	getSeedManagedUploads() {
+		const seen = new Set();
+		const files = [];
+		for (const account of this.getVisibleAccounts()) {
+			for (const file of account.search_seed_uploads || []) {
+				if (!file?.name || seen.has(file.name)) {
+					continue;
+				}
+				seen.add(file.name);
+				files.push({ ...file, account_name: account.account_email });
+				if (files.length >= 8) {
+					return files;
+				}
+			}
+		}
+		return files;
+	}
+
+	getAccountLabel(accountName) {
+		const account = (this.state.accounts || []).find((row) => row.name === accountName || row.account_email === accountName);
+		return account?.account_email || accountName;
 	}
 
 	renderAccountSelector() {
@@ -868,6 +1428,118 @@ class DriveBucketConsole {
 		await this.load();
 	}
 
+	async ensureFolders(accountName) {
+		await frappe.call({
+			method: "drive_bucket.cloud_backup.api.google_auth.ensure_backup_folders",
+			args: { account_name: accountName },
+		});
+		frappe.show_alert({ message: __("Drive folders ensured."), indicator: "green" });
+		await this.load();
+	}
+
+	async runBackup(accountName) {
+		await frappe.call({
+			method: "drive_bucket.cloud_backup.api.control_center.run_account_backup",
+			args: { account_name: accountName },
+		});
+		frappe.show_alert({ message: __("Database backup completed."), indicator: "green" });
+		await this.load();
+	}
+
+	downloadAccountZip(accountName) {
+		const url = `/api/method/drive_bucket.cloud_backup.api.control_center.download_account_uploads_zip?account_name=${encodeURIComponent(accountName)}`;
+		window.open(url, "_blank", "noopener,noreferrer");
+	}
+
+	async retryUpload(accountName, fileRecordName) {
+		await frappe.call({
+			method: "drive_bucket.cloud_backup.api.control_center.retry_failed_upload",
+			args: {
+				account_name: accountName,
+				file_record_name: fileRecordName,
+			},
+		});
+		frappe.show_alert({ message: __("Upload retry started."), indicator: "green" });
+		await this.load();
+	}
+
+	async searchManagedUploads() {
+		this.state.managedSearchQuery = this.$root.find(".js-managed-search-query").val() || "";
+		this.state.managedUploadsPage = 1;
+		const { message } = await frappe.call({
+			method: "drive_bucket.cloud_backup.api.control_center.search_managed_uploads",
+			args: {
+				query: this.state.managedSearchQuery,
+				module: this.state.managedModuleFilter,
+				status: this.state.managedStatusFilter,
+			},
+		});
+		this.state.managedUploadResults = message?.files || [];
+		this.state.activeTab = "overview";
+		this.renderTabs();
+		this.renderManagedUploadResults();
+		this.scrollToManagedResults();
+	}
+
+	toggleAccountSelection(accountName, checked) {
+		const selected = new Set(this.state.selectedAccounts || []);
+		if (checked) {
+			selected.add(accountName);
+		} else {
+			selected.delete(accountName);
+		}
+		this.state.selectedAccounts = Array.from(selected);
+		this.renderManagedFilters();
+	}
+
+	selectVisibleAccounts() {
+		this.state.selectedAccounts = this.getVisibleAccounts().map((account) => account.name);
+		this.render();
+	}
+
+	clearSelection() {
+		this.state.selectedAccounts = [];
+		this.render();
+	}
+
+	async runBulkAction(action) {
+		const selectedAccounts = this.state.selectedAccounts || [];
+		if (!selectedAccounts.length) {
+			frappe.msgprint(__("Select at least one drive first."));
+			return;
+		}
+
+		const actionMap = {
+			sync: async (accountName) => this.syncAccount(accountName),
+			ensure: async (accountName) => this.ensureFolders(accountName),
+			backup: async (accountName) => this.runBackup(accountName),
+			zip: async (accountName) => this.downloadAccountZip(accountName),
+		};
+		const handler = actionMap[action];
+		if (!handler) {
+			return;
+		}
+
+		const failures = [];
+		for (const accountName of selectedAccounts) {
+			try {
+				await handler(accountName);
+			} catch (error) {
+				failures.push(`${this.getAccountLabel(accountName)}: ${error.message || error}`);
+			}
+		}
+		if (action !== "zip") {
+			if (failures.length) {
+				frappe.msgprint({
+					title: __("Bulk action finished with issues"),
+					message: failures.map((item) => `<div>${frappe.utils.escape_html(item)}</div>`).join(""),
+				});
+			} else {
+				frappe.show_alert({ message: __("Bulk action completed."), indicator: "green" });
+			}
+		}
+	}
+
 	async searchDriveFiles() {
 		const accountName = this.$root.find(".js-account-selector").val() || this.state.accounts[0]?.name;
 		if (!accountName) {
@@ -884,24 +1556,38 @@ class DriveBucketConsole {
 			},
 		});
 		const files = message?.files || [];
+		this.state.importedFiles = files;
+		this.state.importDrivePage = 1;
+		this.renderImportResults();
+	}
+
+	renderImportResults() {
 		const $list = this.$root.find(".js-import-list");
+		const files = this.state.importedFiles || [];
 		if (!files.length) {
 			$list.html(`<div class="db-empty">No Google Drive files matched this search.</div>`);
 			return;
 		}
-		$list.html(files.map((file) => `
-			<div class="db-import-item">
-				<strong>${frappe.utils.escape_html(file.name)}</strong>
-				<div class="db-log-row">
-					<span>${frappe.utils.escape_html(file.mimeType || "Unknown type")}</span>
+		const accountName = this.$root.find(".js-account-selector").val() || this.state.accounts[0]?.name;
+		const pageData = this.paginateItems(files, this.state.importDrivePage || 1, 5);
+		this.state.importDrivePage = pageData.currentPage;
+		$list.html(`
+			${pageData.items.map((file) => `
+				<div class="db-import-item">
+					<strong>${frappe.utils.escape_html(file.name)}</strong>
+					<div class="db-log-row">
+						<span>${frappe.utils.escape_html(file.mimeType || "Unknown type")}</span>
 					<span>${frappe.datetime.str_to_user(file.modifiedTime)}</span>
 				</div>
-				<div class="db-action-row" style="margin-top:10px;">
-					<button class="db-btn primary js-import-drive-file" data-account="${frappe.utils.escape_html(accountName)}" data-file-id="${frappe.utils.escape_html(file.id)}">${__("Attach to Document")}</button>
-					${file.webViewLink ? `<a class="db-btn ghost" href="${frappe.utils.escape_html(file.webViewLink)}" target="_blank" rel="noopener noreferrer">${__("Open in Drive")}</a>` : ""}
+					<div class="db-action-row" style="margin-top:10px;">
+						<button class="db-btn primary js-import-drive-file" data-account="${frappe.utils.escape_html(accountName)}" data-file-id="${frappe.utils.escape_html(file.id)}">${__("Attach to Document")}</button>
+						${file.webViewLink ? `<a class="db-btn ghost" href="${frappe.utils.escape_html(file.webViewLink)}" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye" aria-hidden="true" style="margin-right:6px;"></i>${__("Preview")}</a>` : ""}
+						${file.webViewLink ? `<a class="db-btn ghost" href="${frappe.utils.escape_html(file.webViewLink)}" target="_blank" rel="noopener noreferrer">${__("Open in Drive")}</a>` : ""}
+					</div>
 				</div>
-			</div>
-		`).join(""));
+			`).join("")}
+			${this.renderPagination("import", pageData)}
+		`);
 	}
 
 	async promptImport(accountName, fileId) {
@@ -934,5 +1620,67 @@ class DriveBucketConsole {
 	toggleManagedDrives() {
 		this.state.showAllAccounts = !this.state.showAllAccounts;
 		this.renderAccounts();
+	}
+
+	setActiveTab(tabName) {
+		if (!tabName || this.state.activeTab === tabName) {
+			return;
+		}
+		this.state.activeTab = tabName;
+		this.renderTabs();
+	}
+
+	changeManagedUploadsPage(pageNumber) {
+		this.state.managedUploadsPage = pageNumber;
+		this.renderManagedUploadResults();
+		this.scrollToManagedResults();
+	}
+
+	changeImportPage(pageNumber) {
+		this.state.importDrivePage = pageNumber;
+		this.renderImportResults();
+	}
+
+	scrollToManagedResults() {
+		const element = this.$root.find(".js-managed-upload-results").get(0);
+		if (!element) {
+			return;
+		}
+		element.scrollIntoView({ behavior: "smooth", block: "start" });
+	}
+
+	paginateItems(items, currentPage, pageSize) {
+		const totalItems = items.length;
+		const totalPages = Math.max(Math.ceil(totalItems / pageSize), 1);
+		const safePage = Math.min(Math.max(Number(currentPage) || 1, 1), totalPages);
+		const startIndex = (safePage - 1) * pageSize;
+		const endIndex = startIndex + pageSize;
+		return {
+			items: items.slice(startIndex, endIndex),
+			currentPage: safePage,
+			totalPages,
+			totalItems,
+			start: totalItems ? startIndex + 1 : 0,
+			end: Math.min(endIndex, totalItems),
+		};
+	}
+
+	renderPagination(kind, pageData) {
+		if (pageData.totalItems <= 5) {
+			return "";
+		}
+		const buttonClass = kind === "managed" ? "js-managed-page" : "js-import-page";
+		return `
+			<div class="db-pagination">
+				<div class="db-pagination-copy">
+					${frappe.utils.escape_html(__("{0}-{1} of {2}", [pageData.start, pageData.end, pageData.totalItems]))}
+				</div>
+				<div class="db-action-row">
+					<button class="db-btn ghost ${buttonClass}" data-page="${pageData.currentPage - 1}" ${pageData.currentPage <= 1 ? "disabled" : ""}>${__("Previous")}</button>
+					<button class="db-btn ghost" disabled>${frappe.utils.escape_html(__("Page {0} of {1}", [pageData.currentPage, pageData.totalPages]))}</button>
+					<button class="db-btn ghost ${buttonClass}" data-page="${pageData.currentPage + 1}" ${pageData.currentPage >= pageData.totalPages ? "disabled" : ""}>${__("Next")}</button>
+				</div>
+			</div>
+		`;
 	}
 }

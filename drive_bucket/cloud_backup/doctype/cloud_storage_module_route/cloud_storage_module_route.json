@@ -1,0 +1,39 @@
+{
+ "actions": [],
+ "creation": "2026-07-24 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "module",
+  "private_folder_id",
+  "public_folder_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "module",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Module",
+   "options": "Accounts\nAssets\nAutomation\nBulk Transaction\nBuying\nCommunication\nContacts\nCore\nCRM\nCSF KE\nCustom\nDesk\nDrive Bucket\nEDI\nEmail\nERPNext Integrations\nErpnext Kra Integration\neTims\nGeo\nHR\nIntegrations\nMaintenance\nManufacturing\nOffline Sync Core\nPayroll\nPortal\nPrinting\nProjects\nQuality Management\nRegional\nSelling\nSetup\nStock\nSubcontracting\nSupport\nTelephony\nUtilities\nWebsite\nWorkflow",
+   "reqd": 1
+  },
+  {
+   "fieldname": "private_folder_id",
+   "fieldtype": "Data",
+   "label": "Private Folder ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "public_folder_id",
+   "fieldtype": "Data",
+   "label": "Public Folder ID",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "module": "Drive Bucket",
+ "name": "Cloud Storage Module Route",
+ "sort_field": "creation",
+ "sort_order": "DESC"
+}

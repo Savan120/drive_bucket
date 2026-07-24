@@ -46,6 +46,16 @@ after_migrate = "drive_bucket.install.after_migrate"
 
 # include js in doctype views
 doctype_js = {"File": "public/js/file.js"}
+write_file = "drive_bucket.cloud_backup.file_writer.write_file"
+write_file_keys = [
+	"file_url",
+	"file_name",
+	"uploaded_to_google_drive",
+	"drive_bucket_google_account",
+	"drive_bucket_google_file_id",
+	"drive_bucket_google_file_link",
+	"drive_bucket_drive_status",
+]
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -130,10 +140,12 @@ required_apps = ["frappe"]
 
 permission_query_conditions = {
 	"Cloud Storage Account": "drive_bucket.permissions.get_cloud_storage_account_permission_query",
+	"Backup Log": "drive_bucket.permissions.get_backup_log_permission_query",
 }
 
 has_permission = {
 	"Cloud Storage Account": "drive_bucket.permissions.has_cloud_storage_account_permission",
+	"Backup Log": "drive_bucket.permissions.has_backup_log_permission",
 }
 
 # Document Events

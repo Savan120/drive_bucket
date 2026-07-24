@@ -4,12 +4,14 @@ from typing import Any
 
 import frappe
 import requests
+from frappe.utils import cint
 from frappe.utils import now_datetime
 
 from drive_bucket.cloud_backup.api.google_auth import (
 	ACCOUNT_DOCTYPE,
 	GOOGLE_FILES_URL,
 	GoogleDriveError,
+	_get_accessible_account,
 	_get_valid_access_token,
 )
 
@@ -72,6 +74,65 @@ def grant_drive_access(
 	return {"email_address": target_email, "role": access_role}
 
 
+@frappe.whitelist(methods=["POST"])
+def enable_public_link(file_name: str) -> dict[str, Any]:
+	file_doc = _get_file_doc(file_name)
+	if cint(file_doc.is_private):
+		frappe.throw("Private files cannot be shared publicly.")
+
+	account = _get_account_for_file(file_doc)
+	access_token = _get_valid_access_token(account)
+	file_id = file_doc.drive_bucket_google_file_id
+
+	response = requests.get(
+		f"{GOOGLE_FILES_URL}/{file_id}/permissions",
+		headers={"Authorization": f"Bearer {access_token}"},
+		params={"fields": "permissions(id,type,role,allowFileDiscovery)"},
+		timeout=30,
+	)
+	if not response.ok:
+		raise GoogleDriveError(response.text)
+
+	permissions = response.json().get("permissions") or []
+	has_public_access = any(
+		permission.get("type") == "anyone" and permission.get("role") == "reader"
+		for permission in permissions
+	)
+
+	if not has_public_access:
+		create_response = requests.post(
+			f"{GOOGLE_FILES_URL}/{file_id}/permissions",
+			headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"},
+			params={"sendNotificationEmail": "false"},
+			json={"role": "reader", "type": "anyone", "allowFileDiscovery": False},
+			timeout=30,
+		)
+		if not create_response.ok:
+			raise GoogleDriveError(create_response.text)
+
+	metadata_response = requests.get(
+		f"{GOOGLE_FILES_URL}/{file_id}",
+		headers={"Authorization": f"Bearer {access_token}"},
+		params={"fields": "id,webViewLink,webContentLink"},
+		timeout=30,
+	)
+	if not metadata_response.ok:
+		raise GoogleDriveError(metadata_response.text)
+
+	metadata = metadata_response.json()
+	drive_link = metadata.get("webContentLink") or metadata.get("webViewLink")
+	frappe.db.set_value(
+		"File",
+		file_doc.name,
+		{
+			"drive_bucket_google_file_link": drive_link,
+			"drive_bucket_last_shared_at": now_datetime(),
+		},
+		update_modified=False,
+	)
+	return {"file_name": file_doc.name, "google_file_link": drive_link}
+
+
 def _get_file_doc(file_name: str):
 	file_doc = frappe.get_doc("File", file_name)
 	if not file_doc.has_permission("read"):
@@ -87,4 +148,4 @@ def _get_account_for_file(file_doc):
 		frappe.throw("No Google Drive account is linked to this file.")
 	if not frappe.db.exists(ACCOUNT_DOCTYPE, account_name):
 		frappe.throw("The linked Google Drive account could not be found.")
-	return frappe.get_doc(ACCOUNT_DOCTYPE, account_name)
+	return _get_accessible_account(account_name)

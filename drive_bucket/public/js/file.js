@@ -15,6 +15,19 @@ function add_drive_bucket_actions(frm) {
 		}, __("Drive Bucket"));
 	}
 
+	if (!frm.doc.is_private) {
+		frm.add_custom_button(__("Enable Public Link"), async () => {
+			const { message } = await frappe.call({
+				method: "drive_bucket.cloud_backup.api.file_access.enable_public_link",
+				args: { file_name: frm.doc.name },
+			});
+			frappe.show_alert({ message: __("Public Google Drive link enabled."), indicator: "green" });
+			if (message?.google_file_link) {
+				await frm.reload_doc();
+			}
+		}, __("Drive Bucket"));
+	}
+
 	frm.add_custom_button(__("View Drive Access"), async () => {
 		const { message } = await frappe.call({
 			method: "drive_bucket.cloud_backup.api.file_access.get_drive_access",
