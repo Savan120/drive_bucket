@@ -33,6 +33,16 @@ function add_actions(frm) {
 				account_name: frm.doc.name,
 			}, __("Backup folders verified successfully."));
 		}, __("Actions"));
+
+		frm.add_custom_button(__("Run Backup Now"), async () => {
+			await call_account_action(frm, "drive_bucket.cloud_backup.api.control_center.run_account_backup", {
+				account_name: frm.doc.name,
+			}, __("Backup completed successfully."));
+		}, __("Actions"));
+
+		frm.add_custom_button(__("Download Uploads ZIP"), () => {
+			download_account_uploads_zip(frm);
+		}, __("Actions"));
 	}
 }
 
@@ -52,6 +62,12 @@ async function call_account_action(frm, method, args, success_message) {
 	await frappe.call({ method, args });
 	frappe.show_alert({ message: success_message, indicator: "green" });
 	await frm.reload_doc();
+}
+
+function download_account_uploads_zip(frm) {
+	const method = "drive_bucket.cloud_backup.api.control_center.download_account_uploads_zip";
+	const params = new URLSearchParams({ account_name: frm.doc.name });
+	window.open(`/api/method/${method}?${params.toString()}`, "_blank");
 }
 
 function show_status_alerts(frm) {

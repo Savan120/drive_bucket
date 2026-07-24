@@ -8,30 +8,39 @@
  "field_order": [
   "account_email",
   "linked_user",
+  "section_break_access",
   "is_default_upload",
+  "is_default_backup_drive",
   "allow_fallback",
-  "column_break_fnmx",
   "connection_status",
+  "column_break_fnmx",
   "auto_sync_uploads",
+  "backup_every_days",
+  "last_backup_on",
   "last_synced",
+  "section_break_ccel",
+  "user_access",
   "section_break_tokens",
   "refresh_token",
   "token_expiry",
   "column_break_onif",
   "access_token",
   "section_break_folders",
+  "backup_folder_id",
   "private_folder_id",
   "column_break_fnsf",
   "public_folder_id",
+  "section_break_twkd",
+  "module_routes",
   "section_break_quota",
   "total_quota",
+  "status_note",
   "column_break_mnky",
   "used_space",
   "reserve_space_gb",
   "fallback_priority",
-  "status_note",
   "section_break_sfxd",
-  "backup_logs"
+  "route_module"
  ],
  "fields": [
   {
@@ -51,11 +60,36 @@
    "options": "User"
   },
   {
+   "fieldname": "section_break_access",
+   "fieldtype": "Section Break",
+   "label": "User Access"
+  },
+  {
+   "fieldname": "user_access",
+   "fieldtype": "Table",
+   "label": "User Access",
+   "options": "Cloud Storage Account User Access"
+  },
+  {
+   "fieldname": "route_module",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Route Module",
+   "options": "\nAccounts\nAssets\nAutomation\nBulk Transaction\nBuying\nCommunication\nContacts\nCore\nCRM\nCSF KE\nCustom\nDesk\nDrive Bucket\nEDI\nEmail\nERPNext Integrations\nErpnext Kra Integration\neTims\nGeo\nHR\nIntegrations\nMaintenance\nManufacturing\nOffline Sync Core\nPayroll\nPortal\nPrinting\nProjects\nQuality Management\nRegional\nSelling\nSetup\nStock\nSubcontracting\nSupport\nTelephony\nUtilities\nWebsite\nWorkflow"
+  },
+  {
    "default": "0",
    "fieldname": "is_default_upload",
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Default Upload Drive"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_default_backup_drive",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Default Backup Drive"
   },
   {
    "default": "1",
@@ -77,6 +111,18 @@
    "fieldname": "auto_sync_uploads",
    "fieldtype": "Check",
    "label": "Auto Sync New Uploads"
+  },
+  {
+   "default": "1",
+   "fieldname": "backup_every_days",
+   "fieldtype": "Int",
+   "label": "Backup Every (Days)"
+  },
+  {
+   "fieldname": "last_backup_on",
+   "fieldtype": "Date",
+   "label": "Last Backup On",
+   "read_only": 1
   },
   {
    "fieldname": "last_synced",
@@ -115,6 +161,12 @@
    "label": "Drive Folders"
   },
   {
+   "fieldname": "backup_folder_id",
+   "fieldtype": "Data",
+   "label": "Backup Folder ID",
+   "read_only": 1
+  },
+  {
    "fieldname": "private_folder_id",
    "fieldtype": "Data",
    "label": "Private Folder ID",
@@ -125,6 +177,12 @@
    "fieldtype": "Data",
    "label": "Public Folder ID",
    "read_only": 1
+  },
+  {
+   "fieldname": "module_routes",
+   "fieldtype": "Table",
+   "label": "Module Routes",
+   "options": "Cloud Storage Module Route"
   },
   {
    "fieldname": "section_break_quota",
@@ -162,13 +220,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "backup_logs",
-   "fieldtype": "Table",
-   "label": "Backup Logs",
-   "options": "Backup Log",
-   "read_only": 1
-  },
-  {
    "fieldname": "column_break_fnmx",
    "fieldtype": "Column Break"
   },
@@ -187,11 +238,19 @@
   {
    "fieldname": "section_break_sfxd",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_ccel",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_twkd",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-22 17:08:44.478150",
+ "modified": "2026-07-24 15:36:53.812694",
  "modified_by": "Administrator",
  "module": "Drive Bucket",
  "name": "Cloud Storage Account",

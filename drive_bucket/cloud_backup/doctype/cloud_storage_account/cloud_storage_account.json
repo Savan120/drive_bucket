@@ -8,6 +8,11 @@
  "field_order": [
   "account_email",
   "linked_user",
+  "section_break_access",
+  "user_access",
+  "is_default_backup_drive",
+  "backup_every_days",
+  "last_backup_on",
   "connection_status",
   "last_synced",
   "section_break_tokens",
@@ -15,12 +20,13 @@
   "access_token",
   "token_expiry",
   "section_break_folders",
+  "backup_folder_id",
   "private_folder_id",
   "public_folder_id",
+  "module_routes",
   "section_break_quota",
   "total_quota",
-  "used_space",
-  "backup_logs"
+  "used_space"
  ],
  "fields": [
   {
@@ -38,6 +44,42 @@
    "in_list_view": 1,
    "label": "Linked User",
    "options": "User"
+  },
+  {
+   "fieldname": "section_break_access",
+   "fieldtype": "Section Break",
+   "label": "User Access"
+  },
+  {
+   "fieldname": "user_access",
+   "fieldtype": "Table",
+   "label": "User Access",
+   "options": "Cloud Storage Account User Access"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_default_backup_drive",
+   "fieldtype": "Check",
+   "label": "Default Backup Drive"
+  },
+  {
+   "default": "1",
+   "fieldname": "backup_every_days",
+   "fieldtype": "Int",
+   "label": "Backup Every (Days)"
+  },
+  {
+   "fieldname": "last_backup_on",
+   "fieldtype": "Date",
+   "label": "Last Backup On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "route_module",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Route Module",
+   "options": "\nAccounts\nAssets\nAutomation\nBulk Transaction\nBuying\nCommunication\nContacts\nCore\nCRM\nCSF KE\nCustom\nDesk\nDrive Bucket\nEDI\nEmail\nERPNext Integrations\nErpnext Kra Integration\neTims\nGeo\nHR\nIntegrations\nMaintenance\nManufacturing\nOffline Sync Core\nPayroll\nPortal\nPrinting\nProjects\nQuality Management\nRegional\nSelling\nSetup\nStock\nSubcontracting\nSupport\nTelephony\nUtilities\nWebsite\nWorkflow"
   },
   {
    "default": "Failed",
@@ -83,6 +125,12 @@
    "label": "Drive Folders"
   },
   {
+   "fieldname": "backup_folder_id",
+   "fieldtype": "Data",
+   "label": "Backup Folder ID",
+   "read_only": 1
+  },
+  {
    "fieldname": "private_folder_id",
    "fieldtype": "Data",
    "label": "Private Folder ID",
@@ -93,6 +141,12 @@
    "fieldtype": "Data",
    "label": "Public Folder ID",
    "read_only": 1
+  },
+  {
+   "fieldname": "module_routes",
+   "fieldtype": "Table",
+   "label": "Module Routes",
+   "options": "Cloud Storage Module Route"
   },
   {
    "fieldname": "section_break_quota",
@@ -109,13 +163,6 @@
    "fieldname": "used_space",
    "fieldtype": "Float",
    "label": "Used Space",
-   "read_only": 1
-  },
-  {
-   "fieldname": "backup_logs",
-   "fieldtype": "Table",
-   "label": "Backup Logs",
-   "options": "Backup Log",
    "read_only": 1
   }
  ],

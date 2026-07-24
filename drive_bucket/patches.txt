@@ -4,3 +4,5 @@
 
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migrated
+drive_bucket.patches.migrate_backup_logs_to_standalone_doctype
+drive_bucket.patches.migrate_route_module_to_module_routes

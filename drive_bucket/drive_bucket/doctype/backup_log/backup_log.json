@@ -1,10 +1,13 @@
 {
  "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
  "creation": "2026-07-22 00:00:00.000000",
  "doctype": "DocType",
- "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "cloud_storage_account",
+  "account_email",
   "file_name",
   "folder_type",
   "size",
@@ -13,6 +16,21 @@
   "timestamp"
  ],
  "fields": [
+  {
+   "fieldname": "cloud_storage_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cloud Storage Account",
+   "options": "Cloud Storage Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "account_email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Email",
+   "read_only": 1
+  },
   {
    "fieldname": "file_name",
    "fieldtype": "Data",
@@ -25,7 +43,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Folder Type",
-   "options": "Private\nPublic",
+   "options": "Private\nPublic\nDatabase",
    "reqd": 1
   },
   {
@@ -55,10 +73,27 @@
    "label": "Timestamp"
   }
  ],
- "istable": 1,
  "module": "Drive Bucket",
  "name": "Backup Log",
  "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "role": "Storage Admin",
+   "write": 1
+  }
+ ],
  "sort_field": "creation",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "title_field": "file_name",
+ "track_changes": 1
 }
