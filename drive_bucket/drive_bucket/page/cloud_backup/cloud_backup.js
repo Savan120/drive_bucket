@@ -907,6 +907,374 @@ class DriveBucketConsole {
 				background: #ffffff;
 				color: #1b2a44;
 			}
+			.layout-main-section:has(.drive-bucket-console),
+			.page-content:has(.drive-bucket-console),
+			.page-body:has(.drive-bucket-console),
+			:root:not([data-theme="dark"]) .layout-main-section:has(.drive-bucket-console),
+			:root:not([data-theme="dark"]) .page-content:has(.drive-bucket-console),
+			:root:not([data-theme="dark"]) .page-body:has(.drive-bucket-console) {
+				background: var(--bg-color, #f8f9fa) !important;
+			}
+			.page-head:has(+ .layout-main-section .drive-bucket-console),
+			:root:not([data-theme="dark"]) .page-head:has(+ .layout-main-section .drive-bucket-console) {
+				background: var(--bg-color, #f8f9fa) !important;
+				border-bottom-color: var(--border-color, #d1d8dd) !important;
+			}
+			.page-head .page-title .title-text,
+			.page-head .breadcrumb-container,
+			.page-head .breadcrumb-item a,
+			.page-head .breadcrumb-item span,
+			:root:not([data-theme="dark"]) .page-head .page-title .title-text,
+			:root:not([data-theme="dark"]) .page-head .breadcrumb-container,
+			:root:not([data-theme="dark"]) .page-head .breadcrumb-item a,
+			:root:not([data-theme="dark"]) .page-head .breadcrumb-item span {
+				color: var(--text-color, #1f272e) !important;
+			}
+			.drive-bucket-console,
+			:root:not([data-theme="dark"]) .drive-bucket-console {
+				--db-card: var(--card-bg, #ffffff);
+				--db-card-strong: var(--card-bg, #ffffff);
+				--db-border: var(--border-color, #d1d8dd);
+				--db-border-strong: var(--border-color, #c8d0d6);
+				--db-shadow: none;
+				--db-text: var(--text-color, #1f272e);
+				--db-muted: var(--text-muted, #68717a);
+				--db-olive: var(--primary, #2490ef);
+				--db-moss: var(--primary, #2490ef);
+				--db-gold: var(--primary, #2490ef);
+				--db-red: var(--red-600, #e24c4c);
+				--db-blue: var(--primary, #2490ef);
+				--db-surface: var(--control-bg, #f5f7fa);
+				--db-success-soft: rgba(40, 167, 69, 0.10);
+				--db-warning-soft: rgba(36, 144, 239, 0.10);
+				--db-danger-soft: rgba(226, 76, 76, 0.10);
+				background: var(--bg-color, #f8f9fa);
+				border: 1px solid var(--border-color, #d1d8dd);
+				border-radius: 16px;
+				box-shadow: none;
+				backdrop-filter: none;
+			}
+			.drive-bucket-console::before,
+			.drive-bucket-console::after,
+			.db-hero::before,
+			.db-account-card::before,
+			.db-card::before,
+			:root:not([data-theme="dark"]) .drive-bucket-console::before,
+			:root:not([data-theme="dark"]) .drive-bucket-console::after,
+			:root:not([data-theme="dark"]) .db-hero::before,
+			:root:not([data-theme="dark"]) .db-account-card::before,
+			:root:not([data-theme="dark"]) .db-card::before {
+				display: none;
+				background: none !important;
+			}
+			.db-topbar-copy h1,
+			.db-section-head h3,
+			.db-card-title,
+			.db-hero h2,
+			.db-chip-value,
+			.db-default-meta-value,
+			:root:not([data-theme="dark"]) .db-topbar-copy h1,
+			:root:not([data-theme="dark"]) .db-section-head h3,
+			:root:not([data-theme="dark"]) .db-card-title,
+			:root:not([data-theme="dark"]) .db-hero h2,
+			:root:not([data-theme="dark"]) .db-chip-value,
+			:root:not([data-theme="dark"]) .db-default-meta-value {
+				color: var(--text-color, #1f272e);
+				text-shadow: none;
+			}
+			.db-hero,
+			.db-chip,
+			.db-mini-stat,
+			.db-hero-panel,
+			.db-default-meta,
+			.db-card,
+			.db-account-card,
+			.db-log-item,
+			.db-import-item,
+			.db-empty,
+			.db-policy,
+			:root:not([data-theme="dark"]) .db-hero,
+			:root:not([data-theme="dark"]) .db-chip,
+			:root:not([data-theme="dark"]) .db-mini-stat,
+			:root:not([data-theme="dark"]) .db-hero-panel,
+			:root:not([data-theme="dark"]) .db-default-meta,
+			:root:not([data-theme="dark"]) .db-card,
+			:root:not([data-theme="dark"]) .db-account-card,
+			:root:not([data-theme="dark"]) .db-log-item,
+			:root:not([data-theme="dark"]) .db-import-item,
+			:root:not([data-theme="dark"]) .db-empty,
+			:root:not([data-theme="dark"]) .db-policy {
+				background: var(--card-bg, #ffffff);
+				border: 1px solid var(--border-color, #d1d8dd);
+				box-shadow: none;
+				backdrop-filter: none;
+				color: var(--text-color, #1f272e);
+			}
+			.db-hero,
+			:root:not([data-theme="dark"]) .db-hero {
+				background: rgba(36, 144, 239, 0.08);
+				border-color: rgba(36, 144, 239, 0.22);
+			}
+			.db-chip,
+			.db-mini-stat,
+			.db-hero-panel,
+			.db-default-meta,
+			:root:not([data-theme="dark"]) .db-chip,
+			:root:not([data-theme="dark"]) .db-mini-stat,
+			:root:not([data-theme="dark"]) .db-hero-panel,
+			:root:not([data-theme="dark"]) .db-default-meta {
+				background: rgba(36, 144, 239, 0.06);
+				border-color: rgba(36, 144, 239, 0.18);
+			}
+			.db-card,
+			.db-account-card,
+			:root:not([data-theme="dark"]) .db-card,
+			:root:not([data-theme="dark"]) .db-account-card {
+				border-color: rgba(36, 144, 239, 0.14);
+			}
+			.db-tabbar,
+			.db-subtabbar,
+			.db-btn.secondary,
+			.db-btn.ghost,
+			.db-collapse-toggle,
+			.db-search-row input,
+			.db-search-row select,
+			.db-filter-grid input,
+			.db-filter-grid select,
+			:root:not([data-theme="dark"]) .db-tabbar,
+			:root:not([data-theme="dark"]) .db-subtabbar,
+			:root:not([data-theme="dark"]) .db-btn.secondary,
+			:root:not([data-theme="dark"]) .db-btn.ghost,
+			:root:not([data-theme="dark"]) .db-collapse-toggle,
+			:root:not([data-theme="dark"]) .db-search-row input,
+			:root:not([data-theme="dark"]) .db-search-row select,
+			:root:not([data-theme="dark"]) .db-filter-grid input,
+			:root:not([data-theme="dark"]) .db-filter-grid select {
+				background: var(--control-bg, #f5f7fa);
+				border: 1px solid var(--border-color, #d1d8dd);
+				box-shadow: none;
+				backdrop-filter: none;
+				color: var(--text-color, #1f272e);
+			}
+			.db-tabbar,
+			.db-subtabbar,
+			:root:not([data-theme="dark"]) .db-tabbar,
+			:root:not([data-theme="dark"]) .db-subtabbar {
+				background: rgba(36, 144, 239, 0.08);
+				border-color: rgba(36, 144, 239, 0.18);
+			}
+			.db-tab,
+			.db-subtab,
+			:root:not([data-theme="dark"]) .db-tab,
+			:root:not([data-theme="dark"]) .db-subtab {
+				color: var(--text-muted, #68717a);
+				border: 1px solid transparent;
+			}
+			.db-tab:hover,
+			.db-subtab:hover,
+			:root:not([data-theme="dark"]) .db-tab:hover,
+			:root:not([data-theme="dark"]) .db-subtab:hover {
+				background: rgba(36, 144, 239, 0.12);
+				color: var(--text-color, #1f272e);
+				border-color: rgba(36, 144, 239, 0.22);
+			}
+			.db-tab.is-active,
+			.db-subtab.is-active,
+			.db-btn.primary,
+			.db-pill.default-flag,
+			:root:not([data-theme="dark"]) .db-tab.is-active,
+			:root:not([data-theme="dark"]) .db-subtab.is-active,
+			:root:not([data-theme="dark"]) .db-btn.primary,
+			:root:not([data-theme="dark"]) .db-pill.default-flag {
+				background: var(--primary, #2490ef);
+				border-color: var(--primary, #2490ef);
+				box-shadow: none;
+				color: #ffffff;
+			}
+			.db-btn,
+			:root:not([data-theme="dark"]) .db-btn {
+				box-shadow: none;
+				backdrop-filter: none;
+			}
+			.db-meter,
+			:root:not([data-theme="dark"]) .db-meter {
+				background: var(--control-bg, #f5f7fa);
+				box-shadow: none;
+			}
+			.db-meter > span,
+			:root:not([data-theme="dark"]) .db-meter > span {
+				background: var(--green-500, #28a745);
+				box-shadow: none;
+			}
+			.db-topbar-copy p,
+			.db-hero p,
+			.db-hero-panel p,
+			.db-chip-label,
+			.db-default-meta-label,
+			.db-section-head p,
+			.db-card-subtitle,
+			.db-log-row span,
+			.db-import-item span,
+			.db-selection-copy,
+			.db-pagination-copy,
+			.db-detail-line,
+			.db-log-attach,
+			:root:not([data-theme="dark"]) .db-topbar-copy p,
+			:root:not([data-theme="dark"]) .db-hero p,
+			:root:not([data-theme="dark"]) .db-hero-panel p,
+			:root:not([data-theme="dark"]) .db-chip-label,
+			:root:not([data-theme="dark"]) .db-default-meta-label,
+			:root:not([data-theme="dark"]) .db-section-head p,
+			:root:not([data-theme="dark"]) .db-card-subtitle,
+			:root:not([data-theme="dark"]) .db-log-row span,
+			:root:not([data-theme="dark"]) .db-import-item span,
+			:root:not([data-theme="dark"]) .db-selection-copy,
+			:root:not([data-theme="dark"]) .db-pagination-copy,
+			:root:not([data-theme="dark"]) .db-detail-line,
+			:root:not([data-theme="dark"]) .db-log-attach {
+				color: var(--text-muted, #68717a);
+			}
+			.db-search-row input::placeholder,
+			:root:not([data-theme="dark"]) .db-search-row input::placeholder {
+				color: var(--text-muted, #68717a);
+			}
+			.db-search-row select option,
+			:root:not([data-theme="dark"]) .db-search-row select option {
+				background: var(--card-bg, #ffffff);
+				color: var(--text-color, #1f272e);
+			}
+			.db-section-head h3,
+			:root:not([data-theme="dark"]) .db-section-head h3 {
+				color: #1f5fae;
+			}
+			.db-default-meta-label,
+			.db-chip-label,
+			.db-mini-stat-label,
+			:root:not([data-theme="dark"]) .db-default-meta-label,
+			:root:not([data-theme="dark"]) .db-chip-label,
+			:root:not([data-theme="dark"]) .db-mini-stat-label {
+				color: #2b6cb0;
+			}
+			.db-btn.secondary,
+			.db-btn.ghost,
+			.db-collapse-toggle,
+			:root:not([data-theme="dark"]) .db-btn.secondary,
+			:root:not([data-theme="dark"]) .db-btn.ghost,
+			:root:not([data-theme="dark"]) .db-collapse-toggle {
+				background: rgba(36, 144, 239, 0.08);
+				border-color: rgba(36, 144, 239, 0.18);
+			}
+			.db-topbar-copy h1,
+			.db-hero h2,
+			:root:not([data-theme="dark"]) .db-topbar-copy h1,
+			:root:not([data-theme="dark"]) .db-hero h2 {
+				color: #1f4f8f;
+			}
+			.db-chip-value,
+			.db-mini-stat-value,
+			.db-default-meta-value,
+			:root:not([data-theme="dark"]) .db-chip-value,
+			:root:not([data-theme="dark"]) .db-mini-stat-value,
+			:root:not([data-theme="dark"]) .db-default-meta-value {
+				color: #1c3d6e;
+			}
+			.db-pill.green,
+			:root:not([data-theme="dark"]) .db-pill.green {
+				background: rgba(40, 167, 69, 0.12);
+				color: var(--green-700, #1e7e34);
+				border: 1px solid rgba(40, 167, 69, 0.18);
+			}
+			.db-pill.red,
+			:root:not([data-theme="dark"]) .db-pill.red {
+				background: rgba(226, 76, 76, 0.12);
+				color: var(--red-700, #c53030);
+				border: 1px solid rgba(226, 76, 76, 0.18);
+			}
+			.db-pill.gold,
+			:root:not([data-theme="dark"]) .db-pill.gold {
+				background: rgba(255, 190, 11, 0.14);
+				color: var(--yellow-700, #b7791f);
+				border: 1px solid rgba(255, 190, 11, 0.2);
+			}
+			.db-pill.blue,
+			:root:not([data-theme="dark"]) .db-pill.blue {
+				background: rgba(36, 144, 239, 0.12);
+				color: var(--blue-700, #1d5fa7);
+				border: 1px solid rgba(36, 144, 239, 0.18);
+			}
+			.db-pill.slate,
+			:root:not([data-theme="dark"]) .db-pill.slate {
+				background: rgba(108, 117, 125, 0.12);
+				color: var(--gray-700, #4f5d6b);
+				border: 1px solid rgba(108, 117, 125, 0.18);
+			}
+			:root[data-theme="dark"] .drive-bucket-console {
+				background: var(--bg-color, #171717);
+				border-color: rgba(255, 255, 255, 0.08);
+			}
+			:root[data-theme="dark"] .db-hero,
+			:root[data-theme="dark"] .db-card,
+			:root[data-theme="dark"] .db-account-card,
+			:root[data-theme="dark"] .db-chip,
+			:root[data-theme="dark"] .db-mini-stat,
+			:root[data-theme="dark"] .db-hero-panel,
+			:root[data-theme="dark"] .db-default-meta,
+			:root[data-theme="dark"] .db-log-item,
+			:root[data-theme="dark"] .db-import-item,
+			:root[data-theme="dark"] .db-empty,
+			:root[data-theme="dark"] .db-policy {
+				background: rgba(255, 255, 255, 0.02);
+				border-color: rgba(255, 255, 255, 0.08);
+				color: #f3f4f6;
+			}
+			:root[data-theme="dark"] .db-hero {
+				border-top-color: rgba(36, 144, 239, 0.18);
+			}
+			:root[data-theme="dark"] .db-tabbar,
+			:root[data-theme="dark"] .db-subtabbar,
+			:root[data-theme="dark"] .db-btn.secondary,
+			:root[data-theme="dark"] .db-btn.ghost,
+			:root[data-theme="dark"] .db-collapse-toggle,
+			:root[data-theme="dark"] .db-search-row input,
+			:root[data-theme="dark"] .db-search-row select,
+			:root[data-theme="dark"] .db-filter-grid input,
+			:root[data-theme="dark"] .db-filter-grid select,
+			:root[data-theme="dark"] .db-meter {
+				background: rgba(255, 255, 255, 0.04);
+				border-color: rgba(255, 255, 255, 0.08);
+				color: #f3f4f6;
+			}
+			:root[data-theme="dark"] .db-tab:hover,
+			:root[data-theme="dark"] .db-subtab:hover {
+				background: rgba(255, 255, 255, 0.06);
+				border-color: rgba(255, 255, 255, 0.12);
+			}
+			:root[data-theme="dark"] .db-topbar-copy h1,
+			:root[data-theme="dark"] .db-hero h2,
+			:root[data-theme="dark"] .db-section-head h3,
+			:root[data-theme="dark"] .db-chip-value,
+			:root[data-theme="dark"] .db-mini-stat-value,
+			:root[data-theme="dark"] .db-default-meta-value {
+				color: #f7fafc;
+			}
+			:root[data-theme="dark"] .db-default-meta-label,
+			:root[data-theme="dark"] .db-chip-label,
+			:root[data-theme="dark"] .db-mini-stat-label {
+				color: #8fbbe8;
+			}
+			:root[data-theme="dark"] .db-topbar-copy p,
+			:root[data-theme="dark"] .db-hero p,
+			:root[data-theme="dark"] .db-hero-panel p,
+			:root[data-theme="dark"] .db-section-head p,
+			:root[data-theme="dark"] .db-card-subtitle,
+			:root[data-theme="dark"] .db-log-row span,
+			:root[data-theme="dark"] .db-import-item span,
+			:root[data-theme="dark"] .db-selection-copy,
+			:root[data-theme="dark"] .db-pagination-copy,
+			:root[data-theme="dark"] .db-detail-line,
+			:root[data-theme="dark"] .db-log-attach {
+				color: rgba(255, 255, 255, 0.72);
+			}
 			@media (max-width: 1100px) {
 				.db-hero,
 				.db-shell-grid,
